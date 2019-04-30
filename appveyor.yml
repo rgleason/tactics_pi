@@ -76,7 +76,7 @@ artifacts: # push all files in directory
 # Deploy to GitHub Releases
   
 deploy:
-														  
+
   provider: GitHub
   auth_token:
     secure: VVAVg9a8n+XgesI85/cXrXyNeStivq8FynlajE94lGUtzDGeu5PMWI5f1OSYg0tS
