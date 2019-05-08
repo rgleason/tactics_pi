@@ -168,7 +168,7 @@ void TacticsInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
             pdc.DrawRectangle(0, 0, size.x, m_TitleHeight);
 
             wxPen pen;
-            pen.SetStyle( wxSOLID );
+            pen.SetStyle( wxPENSTYLE_SOLID );
             GetGlobalColor( _T("DASHL"), &cl );
             pen.SetColour( cl );
             pdc.SetPen( pen );
@@ -247,7 +247,7 @@ void TacticsInstrument_Single::Draw(wxGCDC* dc)
 void TacticsInstrument_Single::SetData(int st, double data, wxString unit)
 {
       if (m_cap_flag & st){
-            if(!wxIsNaN(data)){
+            if(!std::isnan(data)){
                 if (unit == _T("C"))
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_T("C");
                 else if (unit == _T("\u00B0"))

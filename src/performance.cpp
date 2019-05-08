@@ -195,13 +195,13 @@ void TacticsInstrument_PerformanceSingle::SetData(int st, double data, wxString 
                 DistanceBearingMercator_Plugin(m_pMark->m_lat, m_pMark->m_lon, m_lat, m_lon, &mBRG, &dist);
                 //m_ToWpt = _T("TacticsWP");
             }
-			if (!wxIsNaN(mSTW) && !wxIsNaN(mTWA) && !wxIsNaN(mTWS)){
+			if (!std::isnan(mSTW) && !std::isnan(mTWA) && !std::isnan(mTWS)){
 
 				if (m_displaytype == POLARSPEED){
                   double targetspeed = BoatPolar->GetPolarSpeed(mTWA, mTWS);
                   //double avgtargetspeed = BoatPolar->GetAvgPolarSpeed(mTWA, mTWS);
 
-					if (wxIsNaN(targetspeed) || mSTW == 0)
+					if (std::isnan(targetspeed) || mSTW == 0)
 						m_data = _T("no polar data");
 					else {
                         double percent = mSTW / targetspeed * 100;
@@ -232,7 +232,7 @@ void TacticsInstrument_PerformanceSingle::SetData(int st, double data, wxString 
 				}
 				else if (m_displaytype == POLARTARGETVMGANGLE){
 					TargetxMG targetVMG = BoatPolar->Calc_TargetVMG(mTWA, mTWS);
-					if (!wxIsNaN(targetVMG.TargetAngle))
+					if (!std::isnan(targetVMG.TargetAngle))
 					    m_data = wxString::Format("%.0f", targetVMG.TargetAngle) + _T("\u00B0");
 					else
 						m_data = _T("no polar data");
@@ -242,7 +242,7 @@ void TacticsInstrument_PerformanceSingle::SetData(int st, double data, wxString 
 			  m_data = _T("---");
 
 			if (m_displaytype == POLARCMG){
-				if (!wxIsNaN(mSOG) && !wxIsNaN(mCOG) && mBRG>=0) {
+				if (!std::isnan(mSOG) && !std::isnan(mCOG) && mBRG>=0) {
 				  mCMG = BoatPolar->Calc_CMG(mCOG, mSOG, mBRG);
                   double user_CMG = toUsrSpeed_Plugin(mCMG, g_iDashSpeedUnit);
 				   m_data = wxString::Format("%.2f", user_CMG) + _T(" ") + stwunit;
@@ -255,12 +255,12 @@ void TacticsInstrument_PerformanceSingle::SetData(int st, double data, wxString 
               //TargetxMG targetCMG = BoatPolar->Calc_TargetCMG(mTWS, mTWD, mBRG);
               TargetxMG TCMGMax, TCMGMin;
 	          TCMGMax.TargetSpeed = NAN;
-              if (!wxIsNaN(mTWS) && !wxIsNaN(mTWD) && mBRG>=0)
+              if (!std::isnan(mTWS) && !std::isnan(mTWD) && mBRG>=0)
 		        BoatPolar->Calc_TargetCMG2 (mTWS, mTWD, mBRG, &TCMGMax, &TCMGMin);
-                //if (!wxIsNaN(targetCMG.TargetSpeed) && targetCMG.TargetSpeed > 0) {
-              if (!wxIsNaN(TCMGMax.TargetSpeed) && TCMGMax.TargetSpeed > 0 && !wxIsNaN(mHDT) && !wxIsNaN(mSTW)) {
+                //if (!std::isnan(targetCMG.TargetSpeed) && targetCMG.TargetSpeed > 0) {
+              if (!std::isnan(TCMGMax.TargetSpeed) && TCMGMax.TargetSpeed > 0 && !std::isnan(mHDT) && !std::isnan(mSTW)) {
 					double cmg = BoatPolar->Calc_CMG(mHDT, mSTW, mBRG);
-                    if (!wxIsNaN(cmg) )//&& cmg >=0)
+                    if (!std::isnan(cmg) )//&& cmg >=0)
                     {
                       //double percent = fabs(cmg / targetCMG.TargetSpeed * 100.);
                       double percent = cmg / TCMGMax.TargetSpeed * 100.;
@@ -275,13 +275,13 @@ void TacticsInstrument_PerformanceSingle::SetData(int st, double data, wxString 
 
 			}
             else if (m_displaytype == POLARTARGETCMGANGLE){
-              if (!wxIsNaN(mSTW) && mBRG >= 0 && !wxIsNaN(mHDT)) {
+              if (!std::isnan(mSTW) && mBRG >= 0 && !std::isnan(mHDT)) {
                 double cmg = BoatPolar->Calc_CMG(mHDT, mSTW, mBRG);
                 TargetxMG TCMGMax, TCMGMin;
                 TCMGMax.TargetAngle = NAN;
-                if (!wxIsNaN(mTWS) && !wxIsNaN(mTWD) && mBRG >= 0)
+                if (!std::isnan(mTWS) && !std::isnan(mTWD) && mBRG >= 0)
                   BoatPolar->Calc_TargetCMG2(mTWS, mTWD, mBRG, &TCMGMax, &TCMGMin);
-                if (!wxIsNaN(TCMGMax.TargetAngle))
+                if (!std::isnan(TCMGMax.TargetAngle))
                   m_data = wxString::Format("%.0f", TCMGMax.TargetAngle) + _T("\u00B0");
                 else
                   m_data = _T("no polar data");
@@ -290,7 +290,7 @@ void TacticsInstrument_PerformanceSingle::SetData(int st, double data, wxString 
                 m_data = _T("no data");
             }
             else if (m_displaytype == TWAMARK){
-              if (mBRG>=0 && !wxIsNaN(mTWD)) {
+              if (mBRG>=0 && !std::isnan(mTWD)) {
                 double markBrG = getDegRange(mBRG, mTWD);
                 m_data = wxString::Format("%.0f",(double) markBrG) + _T("\u00B0");
               }
@@ -607,7 +607,7 @@ void Polar::completePolar()
 		//get min/max index (i) with data.
 		//first we fill the gaps in the lines, between existing values
 		while (i <= WINDSPEED) {
-			if (!wxIsNaN(windsp[i].winddir[n]))
+			if (!std::isnan(windsp[i].winddir[n]))
 			{
 				if (i < min_index) min_index = i;
 				if (i > max_index) max_index = i;
@@ -626,7 +626,7 @@ void Polar::completePolar()
 		//get min/max index (i) with data.
 		//now we fill the gaps in the rows, between existing values
 		while (n < WINDDIR) {
-			if (!wxIsNaN(windsp[i].winddir[n]))
+			if (!std::isnan(windsp[i].winddir[n]))
 			{
 				if (n < min_index) min_index = n;
 				if (n > max_index) max_index = n;
@@ -667,7 +667,7 @@ void Polar::CalculateLineAverages(int n, int min, int max)
 	while (j <= max) {
 		j++;
 		count = 0;
-		while (j <= max && wxIsNaN(windsp[j].winddir[n])) // find next cell which is NOT empty
+		while (j <= max && std::isnan(windsp[j].winddir[n])) // find next cell which is NOT empty
 		{
 			j++;
 		}
@@ -694,7 +694,7 @@ void Polar::CalculateRowAverages(int i, int min, int max)
 	while (j <= max) {
 		j++;
 		count = 0;
-		while (j <= max && wxIsNaN(windsp[i].winddir[j])) // find next cell which is NOT empty
+		while (j <= max && std::isnan(windsp[i].winddir[j])) // find next cell which is NOT empty
 		{
 			j++;
 		}
@@ -720,7 +720,7 @@ double Polar::GetPolarSpeed(double twa, double tws)
   int twsmin, i_twa;
 
 //wxLogMessage("-- GetPolarSpeed() - twa=%f tws=%f", twa, tws);
-  if (wxIsNaN(twa) || wxIsNaN(tws))
+  if (std::isnan(twa) || std::isnan(tws))
       return NAN;
   // to do : limits to be checked (0°, 180°, etc.)
   i_twa = wxRound(twa); //the next lower full true wind angle value of the polar array
@@ -730,8 +730,8 @@ double Polar::GetPolarSpeed(double twa, double tws)
   avspd1 = windsp[twsmin].winddir[i_twa] ;
   avspd2 = windsp[twsmin + 1].winddir[i_twa];
   // now do the horizontal averaging btw. the 2 surrounding polar tws values ...
-  //if (wxIsNaN(avspd1) || wxIsNaN(avspd1))
-    return ((wxIsNaN(avspd1) || wxIsNaN(avspd1))?NAN: avspd1 + (avspd2 - avspd1)*fws);
+  //if (std::isnan(avspd1) || std::isnan(avspd1))
+    return ((std::isnan(avspd1) || std::isnan(avspd1))?NAN: avspd1 + (avspd2 - avspd1)*fws);
 }
 /***********************************************************************************
 Get the polar speed with full averaging of the input data of both TWA and TWS.
@@ -779,7 +779,7 @@ TargetxMG Polar::Calc_TargetVMG(double TWA, double TWS)
 	int k=0;
 	if (TWA <90) { //upwind
 		for (k = 1; k < 90; k++){
-			if (!wxIsNaN(windsp[i_tws].winddir[k])){
+			if (!std::isnan(windsp[i_tws].winddir[k])){
 				calcvmg = windsp[i_tws].winddir[k] * cos((double)(k*M_PI / 180.));
                 if (calcvmg < 0) calcvmg = -calcvmg;
 				if (calcvmg > TVMG.TargetSpeed ){
@@ -791,7 +791,7 @@ TargetxMG Polar::Calc_TargetVMG(double TWA, double TWS)
 	}
 	if (TWA >= 90) {  //downwind
 		for ( k = 180; k > 90; k--){
-			if (!wxIsNaN(windsp[i_tws].winddir[k] ) ){
+			if (!std::isnan(windsp[i_tws].winddir[k] ) ){
 				calcvmg = windsp[i_tws].winddir[k] * cos((double)k*M_PI / 180.);
                 if (calcvmg < 0) calcvmg = -calcvmg;
 				//wxLogMessage("cosval=%f, calcvmg=%f", cosval, calcvmg);
@@ -868,7 +868,7 @@ TargetxMG Polar::Calc_TargetCMG(double TWS, double TWD,  double BRG)
       diffAngle = curAngle - range;
       if (diffAngle > 359) diffAngle -= 360;
       if (diffAngle < -359) diffAngle += 360;
-      if (!wxIsNaN(windsp[i_tws].winddir[polang])){
+      if (!std::isnan(windsp[i_tws].winddir[polang])){
         cmg = windsp[i_tws].winddir[polang] * cos(diffAngle*M_PI / 180.);
         if (cmg > TCMG.TargetSpeed) {
           TCMG.TargetSpeed = cmg;
@@ -948,7 +948,7 @@ void Polar::Calc_TargetCMG2(double TWS, double TWD, double BRG, TargetxMG *TCMGM
     diffAngle = curAngle - range;
     if (diffAngle > 359) diffAngle -= 360;
     if (diffAngle < -359) diffAngle += 360;
-    if (!wxIsNaN(windsp[i_tws].winddir[curAngle])){
+    if (!std::isnan(windsp[i_tws].winddir[curAngle])){
       cmg = windsp[i_tws].winddir[curAngle] * cos(diffAngle*M_PI / 180.);
       if (cmg > TCMG1->TargetSpeed){
         TCMG1->TargetSpeed = cmg;
@@ -970,7 +970,7 @@ void Polar::Calc_TargetCMG2(double TWS, double TWD, double BRG, TargetxMG *TCMGM
     diffAngle = curAngle - range;
     if (diffAngle > 359) diffAngle -= 360;
     if (diffAngle < -359) diffAngle += 360;
-    if (!wxIsNaN(windsp[i_tws].winddir[curAngle])){
+    if (!std::isnan(windsp[i_tws].winddir[curAngle])){
       cmg = windsp[i_tws].winddir[curAngle] * cos(diffAngle*M_PI / 180.);
       if (cmg > TCMG2->TargetSpeed) {
         TCMG2->TargetSpeed = cmg;
@@ -1024,9 +1024,9 @@ TargetxMG Polar::Calc_TargetCMG2(double TWS, double TWD, double BRG, TargetxMG *
   for (i = 1; i <= 180; i++){
      polarAngle=i+diffAngle;
      wxLogMessage("polarAngle (i+diffAngle) = %d + %d = %d", i, diffAngle,polarAngle);
-//     if (!wxIsNaN(windsp[i_tws].winddir[polarAngle])){
+//     if (!std::isnan(windsp[i_tws].winddir[polarAngle])){
 //       cmg = windsp[i_tws].winddir[polarAngle] * cos((polarAngle-BRG)*M_PI / 180.);
-       if (!wxIsNaN(windsp[i_tws].winddir[i])){
+       if (!std::isnan(windsp[i_tws].winddir[i])){
          cmg = windsp[i_tws].winddir[i] * cos((polarAngle - BRG)*M_PI / 180.);
          //          wxLogMessage("k=%d, curAngle=%d, polarspeed=%f, curAngle-range=%f, cmg=%f", k, curAngle, windsp[i_tws].winddir[polang], diffAngle, cmg);
       if (cmg > TCMG.TargetSpeed) {
@@ -1044,7 +1044,7 @@ TargetxMG Polar::Calc_TargetCMG2(double TWS, double TWD, double BRG, TargetxMG *
   cmg = 0;
   for (i = 181; i <= 359; i++){
     polarAngle = i + diffAngle;
-    if (!wxIsNaN(windsp[i_tws].winddir[polarAngle])){
+    if (!std::isnan(windsp[i_tws].winddir[polarAngle])){
       cmg = windsp[i_tws].winddir[polarAngle] * cos((polarAngle - BRG)*M_PI / 180.);
       if (cmg > TCMG2->TargetSpeed) {
         TCMG2->TargetSpeed = cmg;
@@ -1097,7 +1097,7 @@ ExpSmooth::~ExpSmooth(void)
 ************************************************************************************/
 double ExpSmooth::GetSmoothVal(double input)
 {
-	if (wxIsNaN(SmoothedValue)) SmoothedValue = input;
+	if (std::isnan(SmoothedValue)) SmoothedValue = input;
 	oldSmoothedValue = SmoothedValue;
 	SmoothedValue = alpha*input + (1 - alpha)*oldSmoothedValue;
 	return SmoothedValue;
@@ -1161,8 +1161,8 @@ DoubleExpSmooth::~DoubleExpSmooth(void)
 double DoubleExpSmooth::GetSmoothVal(double input)
 {
   
-  if (wxIsNaN(SpT)) SpT = input;
-  if (wxIsNaN(Sp2T)) Sp2T = input;
+  if (std::isnan(SpT)) SpT = input;
+  if (std::isnan(Sp2T)) Sp2T = input;
 
   oldSpT = SpT;
   oldSp2T = Sp2T;
@@ -1261,10 +1261,10 @@ void TacticsInstrument_PolarPerformance::SetData(int st, double data, wxString u
       //convert to knots first
       m_STW = fromUsrSpeed_Plugin(data, g_iDashSpeedUnit);
 
-      if (!wxIsNaN(m_STW) && !wxIsNaN(m_TWA) && !wxIsNaN(m_TWS)){
+      if (!std::isnan(m_STW) && !std::isnan(m_TWA) && !std::isnan(m_TWS)){
         double m_PolarSpeed = BoatPolar->GetPolarSpeed(m_TWA, m_TWS);
 
-        if (wxIsNaN(m_PolarSpeed))
+        if (std::isnan(m_PolarSpeed))
           m_PercentUnit = _T("no polar data");
         else if (m_PolarSpeed == 0)
           m_PercentUnit = _T("--");
@@ -1784,18 +1784,17 @@ void TacticsInstrument_PolarPerformance::DrawForeground(wxGCDC* dc)
   int done = -1;
   wxPoint pointTime;
   for (int idx = 0; idx < DATA_RECORD_COUNT; idx++) {
-	wxDateTime localTime( m_ArrayRecTime[i] );
-    min = localTime.GetMinute( );
-    hour = localTime.GetHour( );
-    sec = localTime.GetSecond( );
-    if (m_ArrayRecTime[idx].year != 999) {
-      if ((hour * 100 + min) != done && (min % 5 == 0) && (sec == 0 || sec == 1)) {
+    sec = m_ArrayRecTime[idx].sec;
+    min=m_ArrayRecTime[idx].min;
+    hour=m_ArrayRecTime[idx].hour;
+    if(m_ArrayRecTime[idx].year!= 999) {
+      if ( (hour*100+min) != done && (min % 5 == 0 ) && (sec == 0 || sec == 1) ) {
         pointTime.x = idx * m_ratioW + 3 + m_LeftLegend;
-        dc->DrawLine(pointTime.x, m_TopLineHeight + 1, pointTime.x, (m_TopLineHeight + m_DrawAreaRect.height + 1));
-        label.Printf(_T("%02d:%02d"), hour, min);
+        dc->DrawLine( pointTime.x, m_TopLineHeight+1, pointTime.x,(m_TopLineHeight+m_DrawAreaRect.height+1) );
+        label.Printf(_T("%02d:%02d"), hour,min);
         dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
-        dc->DrawText(label, pointTime.x - width / 2, m_WindowRect.height - height);
-        done = hour * 100 + min;
+        dc->DrawText(label, pointTime.x-width/2, m_WindowRect.height-height);
+        done=hour*100+min;
       }
     }
   }

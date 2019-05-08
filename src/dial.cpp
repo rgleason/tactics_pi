@@ -42,6 +42,7 @@
     #include <wx/wx.h>
 #endif
 
+#include <cmath>
 #include "wx/tokenzr.h"
 
 double rad2deg(double angle)
@@ -95,12 +96,12 @@ void TacticsInstrument_Dial::SetData(int st, double data, wxString unit)
 {
   // Filter out undefined data, normally comes through as "999".
   // Test value must be greater than 360 to enable some compass-type displays.
-  if ((st == m_MainValueCap) && (data < 400.0))
+  if ((st == m_MainValueCap) && (data < 1200.0))
   {
     m_MainValue = data;
     m_MainValueUnit = unit;
   }
-  else if ((st == m_ExtraValueCap) && (data < 400.0))
+  else if ((st == m_ExtraValueCap) && (data < 1200.0))
   {
     m_ExtraValue = data;
     m_ExtraValueUnit = unit;
@@ -360,7 +361,7 @@ void TacticsInstrument_Dial::DrawData(wxGCDC* dc, double value,
       wxSize size = GetClientSize();
 
       wxString text;
-      if(!wxIsNaN(value))
+      if(!std::isnan(value))
       {
           if (unit == _T("\u00B0"))
                text = wxString::Format(format, value)+DEGREE_SIGN;
@@ -421,7 +422,7 @@ void TacticsInstrument_Dial::DrawData(wxGCDC* dc, double value,
                   break;
             case DIAL_POSITION_BOTTOMRIGHT:
                   TextPoint.x = size.x-width-1;
-                  TextPoint.y = size.y-height;
+                  TextPoint.y = size.x-height;
                   break;
       }
 

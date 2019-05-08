@@ -42,6 +42,7 @@
 #endif
 
 #include "instrument.h"
+extern int g_iUTCOffset;    // get offset from tactics_pi.cpp
 
 class TacticsInstrument_Clock: public TacticsInstrument_Single
 {
@@ -53,6 +54,12 @@ public:
     wxSize GetSize( int orient, wxSize hint );
     void SetData(int, double, wxString);
     virtual void SetUtcTime(wxDateTime value);
+    wxString GetDisplayTime( wxDateTime UTCtime );
+    bool getUTC() { return bUTC; }
+    void setUTC( bool flag ) { bUTC = flag; }
+
+private:
+    bool bUTC;
 };
 
 class TacticsInstrument_Moon : public TacticsInstrument_Clock
@@ -95,5 +102,16 @@ private:
     void calculateSun( double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset );
 };
 
+class TacticsInstrument_CPUClock : public TacticsInstrument_Clock
+{
+public:
+    TacticsInstrument_CPUClock( wxWindow *parent, wxWindowID id, wxString title, wxString format = _T( "%02i:%02i:%02i UTC" ) );
+
+    ~TacticsInstrument_CPUClock() {}
+
+    void SetData( int, double, wxString );
+
+    void SetUtcTime( wxDateTime value );
+};
 #endif // __CLOCK_H__
 

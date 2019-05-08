@@ -165,7 +165,7 @@ void TacticsInstrument_BearingCompass::SetData(int st, double data, wxString uni
 		m_BearingUnit = _T("\u00B0");
 	}
     if (!GetSingleWaypoint(_T("TacticsWP"), m_pMark)) m_pMark = NULL;
-    if (m_pMark && !wxIsNaN(m_lat) && !wxIsNaN(m_lon)) {
+    if (m_pMark && !std::isnan(m_lat) && !std::isnan(m_lon)) {
       double dist;
       DistanceBearingMercator_Plugin(m_pMark->m_lat, m_pMark->m_lon, m_lat, m_lon, &m_Bearing, &dist);
       m_ToWpt = _T("TacticsWP");
@@ -173,7 +173,7 @@ void TacticsInstrument_BearingCompass::SetData(int st, double data, wxString uni
       m_ExtraValueDTWUnit = getUsrDistanceUnit_Plugin(g_iDashDistanceUnit);
       m_BearingUnit = _T("\u00B0");
     }
-    if (!m_pMark && wxIsNaN(m_Bearing)){
+    if (!m_pMark && std::isnan(m_Bearing)){
       m_ToWpt = _T("---");
       m_ExtraValueDTW = NAN;
       m_predictedSog = NAN;
@@ -206,20 +206,20 @@ void TacticsInstrument_BearingCompass::Draw(wxGCDC* bdc)
 	DrawFrame(bdc);
 	DrawMarkers(bdc);
 	DrawBackground(bdc);
-    if (!wxIsNaN(m_Bearing)){
+    if (!std::isnan(m_Bearing)){
       DrawData(bdc, m_Bearing, m_BearingUnit, _T("BRG:%.f"), DIAL_POSITION_TOPLEFT);
       DrawData(bdc, 0, m_ToWpt, _T(""), DIAL_POSITION_TOPRIGHT);
     }
-    if (!wxIsNaN(m_CurrSpeed)) DrawData(bdc, m_CurrSpeed, m_CurrSpeedUnit, _T("Curr:%.2f"), DIAL_POSITION_INSIDE);
-    if (!wxIsNaN(m_ExtraValueDTW)) DrawData(bdc, m_ExtraValueDTW, m_ExtraValueDTWUnit, _T("DTW:%.1f"), DIAL_POSITION_BOTTOMLEFT);
-    if (!wxIsNaN(m_CurrDir) && m_CurrDir >= 0 && m_CurrDir < 360)
+    if (!std::isnan(m_CurrSpeed)) DrawData(bdc, m_CurrSpeed, m_CurrSpeedUnit, _T("Curr:%.2f"), DIAL_POSITION_INSIDE);
+    if (!std::isnan(m_ExtraValueDTW)) DrawData(bdc, m_ExtraValueDTW, m_ExtraValueDTWUnit, _T("DTW:%.1f"), DIAL_POSITION_BOTTOMLEFT);
+    if (!std::isnan(m_CurrDir) && m_CurrDir >= 0 && m_CurrDir < 360)
 		DrawCurrent(bdc);
 	DrawForeground(bdc);
 
 	DrawLaylines(bdc);
-    if (!wxIsNaN(m_MainValue)) DrawData(bdc, m_MainValue, m_MainValueUnit, _T("%.0f"), DIAL_POSITION_TOPINSIDE);
+    if (!std::isnan(m_MainValue)) DrawData(bdc, m_MainValue, m_MainValueUnit, _T("%.0f"), DIAL_POSITION_TOPINSIDE);
 
-    if (!wxIsNaN(m_predictedSog)) DrawData(bdc, m_predictedSog, getUsrSpeedUnit_Plugin(g_iDashSpeedUnit), _T("prd.SOG: ~%.1f"), DIAL_POSITION_BOTTOMRIGHT);
+    if (!std::isnan(m_predictedSog)) DrawData(bdc, m_predictedSog, getUsrSpeedUnit_Plugin(g_iDashSpeedUnit), _T("prd.SOG: ~%.1f"), DIAL_POSITION_BOTTOMRIGHT);
 
 
 }
@@ -237,17 +237,17 @@ void TacticsInstrument_BearingCompass::DrawWindAngles(wxGCDC* dc)
 	// draw the wind needles for AWA and TWA. We don't use the standard ones, as they are to big.
 	// 
 	// True Wind Angle first (it's in the background then)
-	if (!wxIsNaN(m_TWA)) {
+	if (!std::isnan(m_TWA)) {
 		wxColour cl;
 		GetGlobalColor(_T("DASH2"), &cl);
 		wxPen pen1;
-		pen1.SetStyle(wxSOLID);
+		pen1.SetStyle(wxPENSTYLE_SOLID);
 		pen1.SetColour(cl);
 		pen1.SetWidth(2);
 		dc->SetPen(pen1);
 		GetGlobalColor(_T("DASH1"), &cl);
 		wxBrush brush1;
-		brush1.SetStyle(wxSOLID);
+		brush1.SetStyle(wxBRUSHSTYLE_SOLID);
 		brush1.SetColour(cl);
 		dc->SetBrush(brush1);
 
@@ -255,7 +255,7 @@ void TacticsInstrument_BearingCompass::DrawWindAngles(wxGCDC* dc)
 
 		GetGlobalColor(_T("BLUE3"), &cl);
 		wxBrush brush;
-		brush.SetStyle(wxSOLID);
+		brush.SetStyle(wxBRUSHSTYLE_SOLID);
 		brush.SetColour(cl);
 		dc->SetBrush(brush);
 
@@ -311,7 +311,7 @@ void TacticsInstrument_BearingCompass::DrawWindAngles(wxGCDC* dc)
 		brg[1].y = m_cy + (m_radius * 0.75 * sin(value));
 
 		wxPen pen2;
-		pen2.SetStyle(wxSOLID);
+		pen2.SetStyle(wxPENSTYLE_SOLID);
 		pen2.SetColour(cl);
 		pen2.SetWidth(1);
 		dc->SetPen(pen2);
@@ -324,13 +324,13 @@ void TacticsInstrument_BearingCompass::DrawWindAngles(wxGCDC* dc)
 		wxColour cl;
 		GetGlobalColor(_T("DASH2"), &cl);
 		wxPen pen1;
-		pen1.SetStyle(wxSOLID);
+		pen1.SetStyle(wxPENSTYLE_SOLID);
 		pen1.SetColour(cl);
 		pen1.SetWidth(2);
 		dc->SetPen(pen1);
 		GetGlobalColor(_T("DASH1"), &cl);
 		wxBrush brush1;
-		brush1.SetStyle(wxSOLID);
+		brush1.SetStyle(wxBRUSHSTYLE_SOLID);
 		brush1.SetColour(cl);
 		dc->SetBrush(brush1);
 
@@ -338,7 +338,7 @@ void TacticsInstrument_BearingCompass::DrawWindAngles(wxGCDC* dc)
 
 		GetGlobalColor(_T("DASHN"), &cl);
 		wxBrush brush;
-		brush.SetStyle(wxSOLID);
+		brush.SetStyle(wxBRUSHSTYLE_SOLID);
 		brush.SetColour(cl);
 		dc->SetBrush(brush);
 
@@ -388,7 +388,7 @@ void TacticsInstrument_BearingCompass::DrawWindAngles(wxGCDC* dc)
 		brg[1].y = m_cy + (m_radius * 0.75 * sin(value));
 
 		wxPen pen2;
-		pen2.SetStyle(wxSOLID);
+		pen2.SetStyle(wxPENSTYLE_SOLID);
 		pen2.SetColour(cl);
 		pen2.SetWidth(1);
 		dc->SetPen(pen2);
@@ -401,7 +401,7 @@ void TacticsInstrument_BearingCompass::DrawWindAngles(wxGCDC* dc)
 Draw pointers for the optimum target VMG- and CMG Angle (if bearing is available)
 ****************************************************************************************/
 void TacticsInstrument_BearingCompass::DrawTargetxMGAngle(wxGCDC* dc){
-  if (!wxIsNaN(m_TWS)) {
+  if (!std::isnan(m_TWS)) {
     // get Target VMG Angle from Polar
     TargetxMG tvmg_up = BoatPolar->GetTargetVMGUpwind(m_TWS);
     TargetxMG tvmg_dn = BoatPolar->GetTargetVMGDownwind(m_TWS);
@@ -414,12 +414,12 @@ void TacticsInstrument_BearingCompass::DrawTargetxMGAngle(wxGCDC* dc){
     if (tvmg_dn.TargetAngle > 0) {
       DrawTargetAngle(dc, m_curTack == _T("\u00B0L") ? 360 - tvmg_dn.TargetAngle : tvmg_dn.TargetAngle, _T("BLUE3"), 2);
     }
-    if (!wxIsNaN(m_Bearing)){
-      if (m_Bearing >= 0 && m_Bearing < 360 && !wxIsNaN(m_TWD)){
+    if (!std::isnan(m_Bearing)){
+      if (m_Bearing >= 0 && m_Bearing < 360 && !std::isnan(m_TWD)){
         //       TargetxMG tcmg = BoatPolar->Calc_TargetCMG(m_TWS, m_TWD, m_Bearing);
         BoatPolar->Calc_TargetCMG2(m_TWS, m_TWD, m_Bearing, &TCMGMax, &TCMGMin);
-        if (!wxIsNaN(TCMGMax.TargetAngle))      DrawTargetAngle(dc, 360 - TCMGMax.TargetAngle, _T("URED"), 2);
-        if (!wxIsNaN(TCMGMin.TargetAngle))      DrawTargetAngle(dc, 360 - TCMGMin.TargetAngle, _T("URED"), 1);
+        if (!std::isnan(TCMGMax.TargetAngle))      DrawTargetAngle(dc, 360 - TCMGMax.TargetAngle, _T("URED"), 2);
+        if (!std::isnan(TCMGMin.TargetAngle))      DrawTargetAngle(dc, 360 - TCMGMin.TargetAngle, _T("URED"), 1);
       }
     }
   }
@@ -433,7 +433,7 @@ void TacticsInstrument_BearingCompass::DrawTargetAngle(wxGCDC* dc, double Target
       dc->SetPen(*wxTRANSPARENT_PEN);
       GetGlobalColor(color, &cl);
       wxBrush brush;
-      brush.SetStyle(wxSOLID);
+      brush.SetStyle(wxBRUSHSTYLE_SOLID);
       brush.SetColour(cl);
       dc->SetBrush(brush);
 
@@ -497,9 +497,9 @@ void TacticsInstrument_BearingCompass::DrawTargetAngle(wxGCDC* dc, double Target
 ****************************************************************************************/
 void TacticsInstrument_BearingCompass::DrawForeground(wxGCDC* dc)
 {
-	if (!wxIsNaN(m_Bearing))  
+	if (!std::isnan(m_Bearing))  
 		DrawBearing(dc);
-    if (!wxIsNaN(m_TWS) && !wxIsNaN(m_TWA)) {
+    if (!std::isnan(m_TWS) && !std::isnan(m_TWA)) {
       //DrawPolar(dc);
       DrawWindAngles(dc);
       DrawTargetxMGAngle(dc);
@@ -515,7 +515,7 @@ void TacticsInstrument_BearingCompass::DrawBearing(wxGCDC* dc)
 
 	GetGlobalColor(_T("URED"), &cl);
 	wxBrush brush;
-	brush.SetStyle(wxSOLID);
+	brush.SetStyle(wxBRUSHSTYLE_SOLID);
 	brush.SetColour(cl);
 	dc->SetBrush(brush);
 
@@ -529,7 +529,7 @@ void TacticsInstrument_BearingCompass::DrawBearing(wxGCDC* dc)
 	brg[1].y = m_cy + (m_radius * 0.98 * sin(value));
 
 	wxPen pen2;
-	pen2.SetStyle(wxSOLID);
+	pen2.SetStyle(wxPENSTYLE_SOLID);
 	pen2.SetColour(cl);
 	pen2.SetWidth(2);
 	dc->SetPen(pen2);
@@ -542,11 +542,11 @@ void TacticsInstrument_BearingCompass::DrawBearing(wxGCDC* dc)
 ****************************************************************************************/
 /*void TacticsInstrument_BearingCompass::DrawPolar(wxGCDC*dc)
 {
-  if (!wxIsNaN(m_TWS)) {
+  if (!std::isnan(m_TWS)) {
     wxColour cl;
     GetGlobalColor(_T("UBLCK"), &cl);
     wxPen pen1;
-    pen1.SetStyle(wxSOLID);
+    pen1.SetStyle(wxPENSTYLE_SOLID);
     pen1.SetColour(cl);
     pen1.SetWidth(2);
     dc->SetPen(pen1);
@@ -554,7 +554,7 @@ void TacticsInstrument_BearingCompass::DrawBearing(wxGCDC* dc)
     double max = 0;
     for (int i = 0; i < 72; i++){
       polval[i] = BoatPolar->GetPolarSpeed(i * 5, m_TWS);
-      if (wxIsNaN(polval[i])) polval[i] = 0.0;
+      if (std::isnan(polval[i])) polval[i] = 0.0;
       if (polval[i]>max) max = polval[i];
     }
     // double anglevalue = deg2rad(m_Bearing) + deg2rad(m_AngleStart - ANGLE_OFFSET);
@@ -572,7 +572,7 @@ void TacticsInstrument_BearingCompass::DrawBearing(wxGCDC* dc)
     }
     wxBrush currbrush;
     currbrush.SetColour(wxColour(7, 107, 183, 0));
-    currbrush.SetStyle(wxSOLID);
+    currbrush.SetStyle(wxBRUSHSTYLE_SOLID);
     dc->SetBrush(currbrush);
     dc->DrawPolygon(72, currpoints, 0, 0);
   }
@@ -587,7 +587,7 @@ void TacticsInstrument_BearingCompass::DrawCurrent(wxGCDC* dc)
 
 	wxBrush currbrush;
 	currbrush.SetColour(wxColour(7, 107, 183, 192));
-	currbrush.SetStyle(wxSOLID);
+	currbrush.SetStyle(wxBRUSHSTYLE_SOLID);
 	dc->SetBrush(currbrush);
 
 	double currvalue = deg2rad(m_CurrDir) + deg2rad(m_AngleStart - ANGLE_OFFSET);
@@ -642,7 +642,7 @@ void TacticsInstrument_BearingCompass::DrawData(wxGCDC* dc, double value,
 	wxSize size = GetClientSize();
 
 	wxString text;
-	if (!wxIsNaN(value))
+	if (!std::isnan(value))
 	{
 		if (unit == _T("\u00B0"))
 			text = wxString::Format(format, value) + DEGREE_SIGN;
@@ -770,19 +770,19 @@ void TacticsInstrument_BearingCompass::DrawData(wxGCDC* dc, double value,
 ****************************************************************************************/
 void TacticsInstrument_BearingCompass::DrawLaylines(wxGCDC* dc)
 {
-  if (!wxIsNaN(m_Cog) && !wxIsNaN(m_Hdt) && !wxIsNaN(m_lat) && !wxIsNaN(m_lon) && !wxIsNaN(m_TWA) && !wxIsNaN(m_CurrDir) && !wxIsNaN(m_CurrSpeed)){
+  if (!std::isnan(m_Cog) && !std::isnan(m_Hdt) && !std::isnan(m_lat) && !std::isnan(m_lon) && !std::isnan(m_TWA) && !std::isnan(m_CurrDir) && !std::isnan(m_CurrSpeed)){
 
 
 		wxColour cl;
 		GetGlobalColor(_T("DASH2"), &cl);
 		wxPen pen1;
-		pen1.SetStyle(wxSOLID);
+		pen1.SetStyle(wxPENSTYLE_SOLID);
 		pen1.SetColour(cl);
 		pen1.SetWidth(2);
 		dc->SetPen(pen1);
 		GetGlobalColor(_T("DASH1"), &cl);
 		wxBrush brush1;
-		brush1.SetStyle(wxSOLID);
+		brush1.SetStyle(wxBRUSHSTYLE_SOLID);
 		brush1.SetColour(cl);
 		dc->SetBrush(brush1);
 
@@ -790,8 +790,8 @@ void TacticsInstrument_BearingCompass::DrawLaylines(wxGCDC* dc)
 
 		GetGlobalColor(_T("DASHN"), &cl);
 		wxBrush vbrush, tackbrush;
-		vbrush.SetStyle(wxSOLID);
-		tackbrush.SetStyle(wxSOLID);
+		vbrush.SetStyle(wxBRUSHSTYLE_SOLID);
+		tackbrush.SetStyle(wxBRUSHSTYLE_SOLID);
 		//m_curTack = TWA unit
 		//it shows L= wind from left = port tack or R=wind from right = starboard tack
 		//we're on port tack, so vertical layline is red
@@ -905,7 +905,7 @@ void TacticsInstrument_BearingCompass::CalculateLaylineDegreeRange(void)
 {
 	//calculate degree-range for laylines
 	//do some exponential smoothing on degree range of COGs
-	if (!wxIsNaN(m_Cog) && m_Cog != m_COGRange[0]){
+	if (!std::isnan(m_Cog) && m_Cog != m_COGRange[0]){
 		double mincog = 360, maxcog = 0;
 		for (int i = 0; i < COGRANGE; i++){
 			if (m_COGRange[i] < mincog) mincog = m_COGRange[i];
