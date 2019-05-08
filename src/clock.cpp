@@ -43,7 +43,11 @@
 TacticsInstrument_Clock::TacticsInstrument_Clock( wxWindow *parent, wxWindowID id, wxString title, int cap_flag, wxString format ) :
       TacticsInstrument_Single( parent, id, title, cap_flag, format )
 {
-}
+    // if format contains the string "LCL" then display time in local TZ
+    if ( format.Contains( _T( "LCL" ) ) )
+        setUTC( false );
+    else
+        setUTC( true );}
 
 wxSize TacticsInstrument_Clock::GetSize( int orient, wxSize hint )
 {
@@ -68,10 +72,42 @@ void TacticsInstrument_Clock::SetUtcTime( wxDateTime data )
 {
     if (data.IsValid())
     {
-        m_data = data.FormatISOTime().Append(_T(" UTC"));
+        m_data = GetDisplayTime( data );
     }
 }
+wxString TacticsInstrument_Clock::GetDisplayTime( wxDateTime UTCtime )
+{
+    wxString result( _T( "---" ) );
+    if ( UTCtime.IsValid() ) {
+        if ( getUTC() ) {
+            result = UTCtime.FormatISOTime().Append( _T( " UTC" ) );
+            return result;
+        }
+        wxDateTime displayTime;
+        if ( g_iUTCOffset != 0 ) {
+            wxTimeSpan offset( 0, g_iUTCOffset * 30, 0 );
+            displayTime = UTCtime.Add( offset );
+        }
+        else {
+            displayTime = UTCtime.FromTimezone( wxDateTime::UTC );
+        }
+        result = displayTime.FormatISOTime().Append( _T( " LCL" ) );
+    }
+    return result;
+}
+TacticsInstrument_CPUClock::TacticsInstrument_CPUClock( wxWindow *parent, wxWindowID id, wxString title, wxString format ) :
+    TacticsInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT | OCPN_DBP_STC_LON | OCPN_DBP_STC_CLK, format )
+{ }
 
+void TacticsInstrument_CPUClock::SetData( int, double, wxString )
+{
+    // Nothing to do here but we want to override the default
+}
+
+void TacticsInstrument_CPUClock::SetUtcTime( wxDateTime data )
+{
+    m_data = wxDateTime::Now().FormatISOTime().Append( _T( " CPU" ) );
+}
 TacticsInstrument_Moon::TacticsInstrument_Moon( wxWindow *parent, wxWindowID id, wxString title ) :
       TacticsInstrument_Clock( parent, id, title, OCPN_DBP_STC_CLK|OCPN_DBP_STC_LAT, _T("%i/4 %c") )
 {
@@ -273,18 +309,24 @@ void TacticsInstrument_Sun::Draw(wxGCDC* dc)
 void TacticsInstrument_Sun::SetUtcTime( wxDateTime data )
 {
     if (data.IsValid())
-    {
         m_dt = data;
-        wxDateTime sunrise, sunset;
-        calculateSun(m_lat, m_lon, sunrise, sunset);
-        if (sunrise.GetYear() != 999)
-            m_sunrise = sunrise.FormatISOTime().Append(_T(" UTC"));
-        else
-            m_sunrise = _T("---");
-        if (sunset.GetYear() != 999)
-            m_sunset = sunset.FormatISOTime().Append(_T(" UTC"));
-        else
-            m_sunset = _T("---");
+    
+    if ( ( m_lat != 999.9 ) && ( m_lon != 999.9 ) )
+      {
+	wxDateTime sunrise, sunset;
+	calculateSun(m_lat, m_lon, sunrise, sunset);
+	if (sunrise.GetYear() != 999)
+	  m_sunrise =  GetDisplayTime( sunrise );
+	else
+	  m_sunrise = _T("---");
+	if (sunset.GetYear() != 999)
+	  m_sunset = sunset.FormatISOTime().Append(_T(" UTC"));
+	else
+	  m_sunset = _T("---");
+      }
+    else {
+      m_sunrise = _T( "---" );
+      m_sunset = _T( "---" );
     }
 }
 
@@ -298,21 +340,6 @@ void TacticsInstrument_Sun::SetData( int st, double data, wxString unit )
       {
             m_lon = data;
       }
-      else return;
-
-      if (m_lat == 999.9 || m_lon == 999.9)
-            return;
-
-      wxDateTime sunset, sunrise;
-      calculateSun(m_lat, m_lon, sunrise, sunset);
-      if (sunrise.GetYear() != 999)
-            m_sunrise = sunrise.FormatISOTime().Append(_T(" UTC"));
-      else
-            m_sunrise = _T("---");
-      if (sunset.GetYear() != 999)
-            m_sunset = sunset.FormatISOTime().Append(_T(" UTC"));
-      else
-            m_sunset = _T("---");
 }
 
 void TacticsInstrument_Sun::calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset){

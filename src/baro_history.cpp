@@ -49,9 +49,6 @@
 TacticsInstrument_BaroHistory::TacticsInstrument_BaroHistory( wxWindow *parent, wxWindowID id, wxString title) :
       TacticsInstrument(parent, id, title, OCPN_DBP_STC_MDA)
 {     SetDrawSoloInPane(true);
-
-
-
       m_MaxPress = 0;
       m_MinPress =(double)1200;
       m_TotalMaxPress = 0;
@@ -278,20 +275,13 @@ void TacticsInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
 
   }
   else {
-    wxDateTime localTime( m_ArrayRecTime[i] );
-    min=localTime.GetMinute( );
-    hour=localTime.GetHour( );
+    min=m_ArrayRecTime[i].min;
+    hour=m_ArrayRecTime[i].hour;
   }
   m_ratioW = double(m_DrawAreaRect.width) / (BARO_RECORD_COUNT-1);
  // dc->DrawText(wxString::Format(_(" Max %.1f Min %.1f since %02d:%02d  Overall Max %.1f Min %.1f "),m_MaxPress,m_MinPress,hour,min,m_TotalMaxPress,m_TotalMinPress), m_LeftLegend+3+2+degw, m_TopLineHeight-degh+5);
  // Cant get the min sice to work...
- // Single text var to facilitate correct translations:
- wxString s_Max = _("Max");
- wxString s_Since = _("since");
- wxString s_OMax = _("Overall Max");
- wxString s_Min = _("Min");
- dc->DrawText(wxString::Format(_T(" %s %.1f %s %02d:%02d  %s %.1f %s %.1f "), s_Max, m_MaxPress, s_Since, hour, min, s_OMax, m_TotalMaxPress, s_Min, m_TotalMinPress), m_LeftLegend + 3 + 2 + degw, m_TopLineHeight - degh + 5);
- //dc->DrawText(wxString::Format(_(" Max %.1f since %02d:%02d  Overall Max %.1f Min %.1f "),m_MaxPress,hour,min,m_TotalMaxPress,m_TotalMinPress), m_LeftLegend+3+2+degw, m_TopLineHeight-degh+5);
+  dc->DrawText(wxString::Format(_(" Max %.1f since %02d:%02d  Overall Max %.1f Min %.1f "),m_MaxPress,hour,min,m_TotalMaxPress,m_TotalMinPress), m_LeftLegend+3+2+degw, m_TopLineHeight-degh+5);
   pen.SetStyle(wxPENSTYLE_SOLID);
   pen.SetColour(wxColour(61,61,204,96)); //blue, transparent
   pen.SetWidth(1);
@@ -330,11 +320,11 @@ void TacticsInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
   pen.SetWidth(2);
   dc->SetPen( pen );
   pointSpeed_old.x=m_LeftLegend+3;
-  pointSpeed_old.y = m_TopLineHeight+m_DrawAreaRect.height - m_ExpSmoothArrayPercentSpd[0] * ratioH;
+  pointSpeed_old.y = m_TopLineHeight+m_DrawAreaRect.height - m_ExpSmoothArrayWindSpd[0] * ratioH;
 
   for (int idx = 1; idx < BARO_RECORD_COUNT; idx++) {
     pointsSpd[idx].x = idx * m_ratioW + 3 + m_LeftLegend;
-    pointsSpd[idx].y = m_ExpSmoothArrayPercentSpd[idx] * ratioH;
+     pointsSpd[idx].y = m_ExpSmoothArrayWindSpd[idx] * ratioH;
     if(BARO_RECORD_COUNT-m_SampleCount <= idx && pointsSpd[idx].y > m_TopLineHeight && pointSpeed_old.y > m_TopLineHeight && pointsSpd[idx].y <=m_TopLineHeight+m_DrawAreaRect.height && pointSpeed_old.y<=m_TopLineHeight+m_DrawAreaRect.height)
       dc->DrawLine( pointSpeed_old.x, pointSpeed_old.y, pointsSpd[idx].x,pointsSpd[idx].y );
     pointSpeed_old.x=pointsSpd[idx].x;
@@ -354,10 +344,9 @@ void TacticsInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
   int done=-1;
   wxPoint pointTime;
   for (int idx = 0; idx < BARO_RECORD_COUNT; idx++) {
-    wxDateTime localTime( m_ArrayRecTime[i] );
-    min=localTime.GetMinute( );
-    hour=localTime.GetHour( );
-    sec=localTime.GetSecond( );
+    sec = m_ArrayRecTime[idx].sec;
+    min=m_ArrayRecTime[idx].min;
+    hour=m_ArrayRecTime[idx].hour;
     if(m_ArrayRecTime[idx].year != 999) {
       if ( (hour*100+min) != done && (min % 5 == 0 ) && (sec == 0 || sec == 1) ) {
         pointTime.x = idx * m_ratioW + 3 + m_LeftLegend;

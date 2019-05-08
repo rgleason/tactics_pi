@@ -85,7 +85,8 @@ TacticsInstrument(parent, id, title, OCPN_DBP_STC_TWD | OCPN_DBP_STC_TWS)
 }
 void TacticsInstrument_WindDirHistory::OnWindHistUpdTimer(wxTimerEvent & event)
 {
-  if (!wxIsNaN(m_TrueWindDir) && !wxIsNaN(m_TrueWindSpd)){
+
+  if (!std::isnan(m_TrueWindDir) && !std::isnan(m_TrueWindSpd)){
     m_WindDir = m_TrueWindDir;
     m_WindSpd = m_TrueWindSpd;
     //start working after we collected 5 records each, as start values for the smoothed curves
@@ -155,7 +156,9 @@ wxSize TacticsInstrument_WindDirHistory::GetSize(int orient, wxSize hint)
 }
 void TacticsInstrument_WindDirHistory::SetData(int st, double data, wxString unit)
 {
-  if (st == OCPN_DBP_STC_TWD || st == OCPN_DBP_STC_TWS) {
+
+  if ((st == OCPN_DBP_STC_TWD || st == OCPN_DBP_STC_TWS) && (!std::isnan(data))) {
+
     if (st == OCPN_DBP_STC_TWD) {
       m_TrueWindDir = data;
       if (m_DirRecCnt <= 3){
@@ -164,11 +167,11 @@ void TacticsInstrument_WindDirHistory::SetData(int st, double data, wxString uni
       }
     }
     if (st == OCPN_DBP_STC_TWS && data < 200.0) {
-      //m_WindSpd = data;
+      m_WindSpd = data;
       //convert to knots first
       m_TrueWindSpd = fromUsrSpeed_Plugin(data, g_iDashWindSpeedUnit);
       // if unit changes, reset everything ...
-     /* if (unit != m_WindSpeedUnit && m_WindSpeedUnit != _("--")) {
+      if (unit != m_WindSpeedUnit && m_WindSpeedUnit != _("--")) {
         m_MaxWindDir = -1;
         m_WindDir = -1;
         m_WindDirRange = 90;
@@ -188,10 +191,10 @@ void TacticsInstrument_WindDirHistory::SetData(int st, double data, wxString uni
           m_ArrayWindSpdHistory[idx] = -1;
           m_ExpSmoothArrayWindSpd[idx] = -1;
           m_ExpSmoothArrayWindDir[idx] = -1;
-          m_ArrayRecTime[idx] = wxDateTime::Now();
-          m_ArrayRecTime[idx].SetYear(999);
+          m_ArrayRecTime[idx] = wxDateTime::Now().GetTm();
+          m_ArrayRecTime[idx].year = 999;
         }
-      }*/
+      }
       m_WindSpeedUnit = unit;
       if (m_SpdRecCnt <= 3){
         m_SpdStartVal += data;
@@ -203,57 +206,6 @@ void TacticsInstrument_WindDirHistory::SetData(int st, double data, wxString uni
       m_TrueWindDir = m_DirStartVal / 3;
       m_oldDirVal = m_TrueWindDir; // make sure we don't get a diff > or <180 in the initial run
     }
-    /*  put this code to the timer fuction ...
-    //start working after we collected 5 records each, as start values for the smoothed curves
-    if (m_SpdRecCnt > 3 && m_DirRecCnt > 3) {
-      m_IsRunning = true;
-      m_SampleCount = m_SampleCount<WIND_RECORD_COUNT ? m_SampleCount + 1 : WIND_RECORD_COUNT;
-      m_MaxWindDir = 0;
-      m_MinWindDir = 360;
-      m_MaxWindSpd = 0;
-      //data shifting
-      for (int idx = 1; idx < WIND_RECORD_COUNT; idx++) {
-        if (WIND_RECORD_COUNT - m_SampleCount <= idx)
-          m_MinWindDir = wxMin(m_ArrayWindDirHistory[idx], m_MinWindDir);
-        m_MaxWindDir = wxMax(m_ArrayWindDirHistory[idx - 1], m_MaxWindDir);
-        m_MaxWindSpd = wxMax(m_ArrayWindSpdHistory[idx - 1], m_MaxWindSpd);
-        m_ArrayWindDirHistory[idx - 1] = m_ArrayWindDirHistory[idx];
-        m_ArrayWindSpdHistory[idx - 1] = m_ArrayWindSpdHistory[idx];
-        m_ExpSmoothArrayWindSpd[idx - 1] = m_ExpSmoothArrayWindSpd[idx];
-        m_ExpSmoothArrayWindDir[idx - 1] = m_ExpSmoothArrayWindDir[idx];
-        m_ArrayRecTime[idx - 1] = m_ArrayRecTime[idx];
-      }
-      double diff = m_WindDir - m_oldDirVal;
-      if (diff < -270) {
-        m_WindDir += 360;
-      }
-      else
-        if (diff > 270) {
-          m_WindDir -= 360;
-        }
-      m_ArrayWindDirHistory[WIND_RECORD_COUNT - 1] = m_WindDir;
-      m_ArrayWindSpdHistory[WIND_RECORD_COUNT - 1] = m_WindSpd;
-      if (m_SampleCount<2) {
-        m_ArrayWindSpdHistory[WIND_RECORD_COUNT - 2] = m_WindSpd;
-        m_ExpSmoothArrayWindSpd[WIND_RECORD_COUNT - 2] = m_WindSpd;
-        m_ArrayWindDirHistory[WIND_RECORD_COUNT - 2] = m_WindDir;
-        m_ExpSmoothArrayWindDir[WIND_RECORD_COUNT - 2] = m_WindDir;
-      }
-      m_ExpSmoothArrayWindSpd[WIND_RECORD_COUNT - 1] = alpha*m_ArrayWindSpdHistory[WIND_RECORD_COUNT - 2] + (1 - alpha)*m_ExpSmoothArrayWindSpd[WIND_RECORD_COUNT - 2];
-      m_ExpSmoothArrayWindDir[WIND_RECORD_COUNT - 1] = alpha*m_ArrayWindDirHistory[WIND_RECORD_COUNT - 2] + (1 - alpha)*m_ExpSmoothArrayWindDir[WIND_RECORD_COUNT - 2];
-
-      m_ArrayRecTime[WIND_RECORD_COUNT - 1] = wxDateTime::Now();
-      m_oldDirVal = m_ExpSmoothArrayWindDir[WIND_RECORD_COUNT - 1];
-      //include the new/latest value in the max/min value test too
-      m_MaxWindDir = wxMax(m_WindDir, m_MaxWindDir);
-      m_MinWindDir = wxMin(m_WindDir, m_MinWindDir);
-      m_MaxWindSpd = wxMax(m_WindSpd, m_MaxWindSpd);
-      //get the overall max Wind Speed
-      m_TotalMaxWindSpd = wxMax(m_WindSpd, m_TotalMaxWindSpd);
-
-      // set wind angle scale to full +/- 90° depending on the real max/min value recorded
-      SetMinMaxWindScale();
-    }*/
   }
 }
 
@@ -463,6 +415,7 @@ void  TacticsInstrument_WindDirHistory::DrawWindSpeedScale(wxGCDC* dc)
 //*********************************************************************************
 void TacticsInstrument_WindDirHistory::DrawBackground(wxGCDC* dc)
 {
+  wxLogMessage("DrawBackground()");
   wxString label, label1, label2, label3, label4, label5;
   wxColour cl;
   wxPen pen;
@@ -485,7 +438,7 @@ void TacticsInstrument_WindDirHistory::DrawBackground(wxGCDC* dc)
   dc->DrawLine(m_LeftLegend + 3, (int)(m_TopLineHeight + m_DrawAreaRect.height*0.25), m_WindowRect.width - 3 - m_RightLegend, (int)(m_TopLineHeight + m_DrawAreaRect.height*0.25));
   dc->DrawLine(m_LeftLegend + 3, (int)(m_TopLineHeight + m_DrawAreaRect.height*0.75), m_WindowRect.width - 3 - m_RightLegend, (int)(m_TopLineHeight + m_DrawAreaRect.height*0.75));
 #ifdef __WXMSW__
-  pen.SetStyle(wxSHORT_DASH);
+  pen.SetStyle(wxPENSTYLE_SHORT_DASH);
   dc->SetPen(pen);
 #endif
   dc->DrawLine(m_LeftLegend + 3, (int)(m_TopLineHeight + m_DrawAreaRect.height*0.5), m_WindowRect.width - 3 - m_RightLegend, (int)(m_TopLineHeight + m_DrawAreaRect.height*0.5));
@@ -552,6 +505,7 @@ wxString TacticsInstrument_WindDirHistory::GetWindDirStr(wxString WindDir)
 //*********************************************************************************
 void TacticsInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
 {
+
   wxColour col;
   double ratioH;
   int degw, degh;
@@ -640,9 +594,8 @@ void TacticsInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
     hour = 0;
   }
   else {
-    wxDateTime localTime( m_ArrayRecTime[i] );
-    min = localTime.GetMinute( );
-    hour=localTime.GetMinute( );
+    min = m_ArrayRecTime[i].min;
+    hour = m_ArrayRecTime[i].hour;
   }
   //Single text var to facilitate correc translations:
   wxString s_Max = _("Max");
@@ -701,18 +654,17 @@ void TacticsInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
   int done = -1;
   wxPoint pointTime;
   for (int idx = 0; idx < WIND_RECORD_COUNT; idx++) {
-    wxDateTime localTime( m_ArrayRecTime[i] );
-    if (localTime.GetYear( ) != 999) {
-      min = localTime.GetMinute( );
-      hour=localTime.GetMinute( );
-      sec=localTime.GetSecond( );
-      if ((hour * 100 + min) != done && (min % 5 == 0) && (sec == 0 || sec == 1)) {
+    sec = m_ArrayRecTime[idx].sec;
+    min=m_ArrayRecTime[idx].min;
+    hour=m_ArrayRecTime[idx].hour;
+    if(m_ArrayRecTime[idx].year!= 999) {
+      if ( (hour*100+min) != done && (min % 5 == 0 ) && (sec == 0 || sec == 1) ) {
         pointTime.x = idx * m_ratioW + 3 + m_LeftLegend;
-        dc->DrawLine(pointTime.x, m_TopLineHeight + 1, pointTime.x, (m_TopLineHeight + m_DrawAreaRect.height + 1));
-        label.Printf(_T("%02d:%02d"), hour, min);
+        dc->DrawLine( pointTime.x, m_TopLineHeight+1, pointTime.x,(m_TopLineHeight+m_DrawAreaRect.height+1) );
+        label.Printf(_T("%02d:%02d"), hour,min);
         dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
-        dc->DrawText(label, pointTime.x - width / 2, m_WindowRect.height - height);
-        done = hour * 100 + min;
+        dc->DrawText(label, pointTime.x-width/2, m_WindowRect.height-height);
+        done=hour*100+min;
       }
     }
   }

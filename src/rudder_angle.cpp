@@ -44,7 +44,7 @@
 TacticsInstrument_RudderAngle::TacticsInstrument_RudderAngle( wxWindow *parent, wxWindowID id, wxString title) :
       TacticsInstrument_Dial( parent, id, title, 0, 100, 160, -40, +40)
 {
-     /* // Default Rudder position is centered
+     // Default Rudder position is centered
       m_MainValue = 0;
 
       //SetOptionMainValue(_T("%3.0f Deg"), DIAL_POSITION_BOTTOMLEFT);
@@ -53,7 +53,7 @@ TacticsInstrument_RudderAngle::TacticsInstrument_RudderAngle( wxWindow *parent, 
       wxString labels[] = {_T("40"), _T("30"), _T("20"), _T("10"), _T("0"), _T("10"), _T("20"), _T("30"), _T("40")};
       SetOptionLabel(10, DIAL_LABEL_HORIZONTAL, wxArrayString(9, labels));
 //      SetOptionExtraValue(_T("%02.0f"), DIAL_POSITION_INSIDE);
-*/
+
 }
 
 wxSize TacticsInstrument_RudderAngle::GetSize( int orient, wxSize hint )
@@ -124,6 +124,9 @@ void TacticsInstrument_RudderAngle::DrawBackground(wxGCDC* dc)
 {
       wxCoord x = m_cx - (m_radius * 0.3);
       wxCoord y = m_cy - (m_radius * 0.5);
-      //dc->DrawEllipticArc(x, y, m_radius * 0.6, m_radius * 1.4, 0, 180);
+      wxColour cl;
+      GetGlobalColor(_T("DASH1"), &cl);
+      dc->SetBrush( cl );
+      dc->DrawEllipticArc(x, y, m_radius * 0.6, m_radius * 1.4, 0, 180);
 }
 

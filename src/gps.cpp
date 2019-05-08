@@ -47,7 +47,7 @@
 TacticsInstrument_GPS::TacticsInstrument_GPS( wxWindow *parent, wxWindowID id, wxString title) :
       TacticsInstrument(parent, id, title, 0)
 {
-     /* m_cx = 35;
+      m_cx = 35;
       m_cy = 57;
       m_radius = 35;
 
@@ -58,7 +58,7 @@ TacticsInstrument_GPS::TacticsInstrument_GPS( wxWindow *parent, wxWindowID id, w
             m_SatInfo[idx].ElevationDegrees = 0;
             m_SatInfo[idx].AzimuthDegreesTrue = 0;
             m_SatInfo[idx].SignalToNoiseRatio = 0;
-      }*/
+      }
 }
 
 wxSize TacticsInstrument_GPS::GetSize( int orient, wxSize hint )
@@ -169,7 +169,7 @@ void TacticsInstrument_GPS::DrawFrame(wxGCDC* dc)
 
       //        wxSHORT_DASH is not supported on GTK, and it destroys the pen.
 #ifndef __WXGTK__
-      pen.SetStyle(wxSHORT_DASH);
+      pen.SetStyle(wxPENSTYLE_SHORT_DASH);
       dc->SetPen(pen);
 #endif
       dc->DrawLine(3, 110, size.x-3, 110);

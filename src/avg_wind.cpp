@@ -68,9 +68,6 @@ TacticsInstrument(parent, id, title, OCPN_DBP_STC_TWD)
    }
    mDblsinExpSmoothWindDir = new DoubleExpSmooth(0.06);
    mDblcosExpSmoothWindDir = new DoubleExpSmooth(0.06);
-   /* for (int idx = 0; idx < AVG_WIND_RECORDS; idx++) {
-    m_ArrayRecTime[idx] = wxDateTime::Now().GetTm( );
-  }*/
   alpha = 0.1;  //smoothing constant
   wxSize size = GetClientSize();
   m_cx = size.x / 2;
@@ -92,7 +89,7 @@ TacticsInstrument(parent, id, title, OCPN_DBP_STC_TWD)
 }
 void TacticsInstrument_AvgWindDir::OnAvgWindUpdTimer(wxTimerEvent & event)
 {
-  if (!wxIsNaN(m_WindDir))
+  if (!std::isnan(m_WindDir))
     CalcAvgWindDir(m_WindDir);
 }
 void TacticsInstrument_AvgWindDir::OnAvgTimeSliderUpdated(wxCommandEvent& event)
@@ -127,7 +124,7 @@ void TacticsInstrument_AvgWindDir::SetData(int st, double data, wxString unit)
     if (st == OCPN_DBP_STC_TWD ) { 
       m_WindDir = data;
     }
-    m_IsRunning = wxIsNaN(m_WindDir)? false:true;
+    m_IsRunning = std::isnan(m_WindDir)? false:true;
 }
 
 double TacticsInstrument_AvgWindDir::GetAvgWindDir()
@@ -171,7 +168,7 @@ void TacticsInstrument_AvgWindDir::CalcAvgWindDir(double CurWindDir)
  m_DegRangePort = 360;
  m_DegRangeStb = -360;
  double val,smval,smWDir;
- for (i = 0; i < samples && !wxIsNaN(m_WindDirArray[i]); i++){
+ for (i = 0; i < samples && !std::isnan(m_WindDirArray[i]); i++){
   val= getSignedDegRange(m_AvgWindDir, m_WindDirArray[i]);
   m_signedWindDirArray[i] = val;
   smWDir = (90. - (atan2(m_ExpsinSmoothArrayWindDir[i], m_ExpcosSmoothArrayWindDir[i])*180. / M_PI) + 360.);
@@ -283,7 +280,7 @@ void TacticsInstrument_AvgWindDir::DrawForeground(wxGCDC* dc)
   dc->SetFont(*g_pFontData);
   col = wxColour(255, 0, 0, 255); //red, solid
   dc->SetTextForeground(col);
-  if (!m_IsRunning || wxIsNaN(m_WindDir))
+  if (!m_IsRunning || std::isnan(m_WindDir))
     avgWindAngle = _T("---");
   else {
     dir = wxRound(m_AvgWindDir);
@@ -364,7 +361,7 @@ void TacticsInstrument_AvgWindDir::DrawForeground(wxGCDC* dc)
   // wind speed
   //---------------------------------------------------------------------------------
   dc->SetFont(*g_pFontData);
-  if (!m_IsRunning || wxIsNaN(m_WindDir)){
+  if (!m_IsRunning || std::isnan(m_WindDir)){
     minAngle = _T("---");
     maxAngle = _T("---");
   }

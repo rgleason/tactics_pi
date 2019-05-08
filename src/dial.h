@@ -69,7 +69,7 @@ typedef enum
       DIAL_POSITION_TOPRIGHT,
       DIAL_POSITION_BOTTOMLEFT,
       DIAL_POSITION_BOTTOMRIGHT,
-	  DIAL_POSITION_TOPINSIDE
+      DIAL_POSITION_TOPINSIDE
 } DialPositionOption;
 
 extern double rad2deg(double angle);
