@@ -2467,107 +2467,115 @@ void tactics_pi::SetNMEASentence(wxString &sentence)
 			}
 		}
 		else if (m_NMEA0183.LastSentenceIDReceived == _T("XDR")) {  //Transducer measurement
-			if (m_NMEA0183.Parse())
-			{
-				wxString xdrunit;
-				double xdrdata;
-				for (int i = 0; i<m_NMEA0183.Xdr.TransducerCnt; i++){
+		  /* XDR Transducer types
+		   * AngularDisplacementTransducer = 'A',
+		   * TemperatureTransducer = 'C',
+		   * LinearDisplacementTransducer = 'D',
+		   * FrequencyTransducer = 'F',
+		   * HumidityTransducer = 'H',
+		   * ForceTransducer = 'N',
+		   * PressureTransducer = 'P',
+		   * FlowRateTransducer = 'R',
+		   * TachometerTransducer = 'T',
+		   * VolumeTransducer = 'V'
+		   */
 
-					xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
-					// NKE style of XDR Airtemp
-					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("AirTemp")){
-						SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData, m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
-					} //Nasa style air temp
-					// NKE style of XDR Barometer
-					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("Barometer")){
-
-						double data;
-						if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == _T("B"))
-							data = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData * 1000.;
-						else
-							data = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
-
-						SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, data, _T("hPa"));
-					} //Nasa style air temp
-					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_OUTAIR_T") || m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_OUTSIDE_T")){
-						SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData, m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
-					}
-					// NKE style of XDR Pitch (=Bow up/down)
-					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH")) {
-						if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0){
-							xdrunit = _("\u00B0 Bow up");
-						}
-						else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-							xdrunit = _("\u00B0 Bow down");
-							xdrdata *= -1;
-						}
-						else {
-							xdrunit = _T("\u00B0");
-						}
-						SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata, xdrunit);
-					}
-					// NKE style of XDR Heel
-					if ((m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ROLL")) ||
-						(m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("Heel Angle"))){
-						if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0)
-							xdrunit = _T("\u00B0r");
-						else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-							xdrunit = _T("\u00B0l");
-						}
-						else
-							xdrunit = _T("\u00B0");
-						SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
-
-					} //Nasa style water temp
-					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
-						SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData, m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
-					}
-				}
-
-			}
+		  if (m_NMEA0183.Parse()) { 
+		    wxString xdrunit;
+		    double xdrdata;
+		    for (int i = 0; i<m_NMEA0183.Xdr.TransducerCnt; i++) {
+		      xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
+		      // XDR Airtemp
+		      if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C")) {
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, xdrdata , m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+		      }
+		      // XDR Pressure
+		      if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("P")) {
+                        if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == _T("B")) {
+			  xdrdata *= 1000;
+			  SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, xdrdata , _T("mBar") );
+                        }
+		      }
+		      // XDR Pitch (=Nose up/down) or Heel (stb/port)
+		      if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
+                        if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH")
+                            || m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PITCH")) {
+			  if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
+			    xdrunit = _T("\u00B0 Nose up");
+			  }
+			  else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+			    xdrunit = _T("\u00B0 Nose down");
+			    xdrdata *= -1;
+			  }
+			  else {
+			    xdrunit = _T("\u00B0");
+			  }
+			  SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata, xdrunit);
+                        }
+                        // XDR Heel
+                        else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ROLL")) {
+			  if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
+			    xdrunit = _T("\u00B0 to Starboard");
+			  }
+			  else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+			    xdrunit = _T("\u00B0 to Port");
+			    xdrdata *= -1;
+			  }
+			  else {
+			    xdrunit = _T("\u00B0");
+			  }
+			  SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
+                        }
+		      }
+		      //Nasa style water temp
+		      if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+		      }
+		    }
+		  }
 		}
 		else if (m_NMEA0183.LastSentenceIDReceived == _T("ZDA")) {
-			if (m_NMEA0183.Parse()) {
-				if (mPriDateTime >= 2) {
-					mPriDateTime = 2;
-
-					/*
-					wxString m_NMEA0183.Zda.UTCTime;
-					int      m_NMEA0183.Zda.Day;
-					int      m_NMEA0183.Zda.Month;
-					int      m_NMEA0183.Zda.Year;
-					int      m_NMEA0183.Zda.LocalHourDeviation;
-					int      m_NMEA0183.Zda.LocalMinutesDeviation;
-					*/
-					wxString dt;
-					dt.Printf(_T("%4d%02d%02d"), m_NMEA0183.Zda.Year, m_NMEA0183.Zda.Month,
-						m_NMEA0183.Zda.Day);
-					dt.Append(m_NMEA0183.Zda.UTCTime);
-					mUTCDateTime.ParseFormat(dt.c_str(), _T("%Y%m%d%H%M%S"));
-				}
-			}
+		  if (m_NMEA0183.Parse()) {
+		    if (mPriDateTime >= 2) {
+		      mPriDateTime = 2;
+		      
+		      /*
+			wxString m_NMEA0183.Zda.UTCTime;
+			int      m_NMEA0183.Zda.Day;
+			int      m_NMEA0183.Zda.Month;
+			int      m_NMEA0183.Zda.Year;
+			int      m_NMEA0183.Zda.LocalHourDeviation;
+			int      m_NMEA0183.Zda.LocalMinutesDeviation;
+		      */
+		      wxString dt;
+		      dt.Printf(_T("%4d%02d%02d"), m_NMEA0183.Zda.Year, m_NMEA0183.Zda.Month,
+				m_NMEA0183.Zda.Day);
+		      dt.Append(m_NMEA0183.Zda.UTCTime);
+		      mUTCDateTime.ParseFormat(dt.c_str(), _T("%Y%m%d%H%M%S"));
+		    }
+		  }
 		}
 	}
 	//      Process an AIVDO message
 	else if (sentence.Mid(1, 5).IsSameAs(_T("AIVDO"))) {
-		PlugIn_Position_Fix_Ex gpd;
-		if (DecodeSingleVDOMessage(sentence, &gpd, &m_VDO_accumulator)) {
-
-			if (!std::isnan(gpd.Lat))
-				SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, gpd.Lat, _T("SDMM"));
-
-			if (!std::isnan(gpd.Lon))
-				SendSentenceToAllInstruments(OCPN_DBP_STC_LON, gpd.Lon, _T("SDMM"));
-
-			//            SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( gpd.Sog, g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
-			//            SendSentenceToAllInstruments( OCPN_DBP_STC_COG, gpd.Cog, _T("\u00B0") );
-			SendSentenceToAllInstruments(OCPN_DBP_STC_SOG, toUsrSpeed_Plugin(mSOGFilter.filter(gpd.Sog), g_iDashSpeedUnit), getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
-			SendSentenceToAllInstruments(OCPN_DBP_STC_COG, mCOGFilter.filter(gpd.Cog), _T("\u00B0"));
-			if (!std::isnan(gpd.Hdt)) {
-				SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, gpd.Hdt, _T("\u00B0T"));
-				mHDT_Watchdog = gps_watchdog_timeout_ticks;
-			}
-		}
+	  PlugIn_Position_Fix_Ex gpd;
+	  if (DecodeSingleVDOMessage(sentence, &gpd, &m_VDO_accumulator)) {
+	    
+	    if (!std::isnan(gpd.Lat))
+	      SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, gpd.Lat, _T("SDMM"));
+	    
+	    if (!std::isnan(gpd.Lon))
+	      SendSentenceToAllInstruments(OCPN_DBP_STC_LON, gpd.Lon, _T("SDMM"));
+	    
+	    //            SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( gpd.Sog, g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
+	    //            SendSentenceToAllInstruments( OCPN_DBP_STC_COG, gpd.Cog, _T("\u00B0") );
+	    SendSentenceToAllInstruments(OCPN_DBP_STC_SOG, toUsrSpeed_Plugin(mSOGFilter.filter(gpd.Sog), g_iDashSpeedUnit), getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+	    SendSentenceToAllInstruments(OCPN_DBP_STC_COG, mCOGFilter.filter(gpd.Cog), _T("\u00B0"));
+	    if (!std::isnan(gpd.Hdt)) {
+	      SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, gpd.Hdt, _T("\u00B0T"));
+	      mHDT_Watchdog = gps_watchdog_timeout_ticks;
+	    }
+	  }
 	}
 }
 
