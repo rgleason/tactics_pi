@@ -39,6 +39,8 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+#include <cmath>
+
 #include "wx/tokenzr.h"
 #include "performance.h"
 extern int g_iMinLaylineWidth;
