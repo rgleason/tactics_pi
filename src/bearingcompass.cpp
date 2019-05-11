@@ -41,6 +41,8 @@
 #endif
 #include "wx/tokenzr.h"
 #include "performance.h"
+#include <cmath>
+
 extern int g_iMinLaylineWidth;
 extern int g_iMaxLaylineWidth;
 extern Polar* BoatPolar;

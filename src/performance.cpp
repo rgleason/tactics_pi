@@ -42,6 +42,7 @@
 
 #include "performance.h"
 #include <map>
+#include <cmath>
 
 extern Polar* BoatPolar;
 extern wxString g_path_to_PolarLookupOutputFile;

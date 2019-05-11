@@ -40,6 +40,7 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+#include <cmath>
 
 extern int g_iDashWindSpeedUnit;
 //************************************************************************************************************************
