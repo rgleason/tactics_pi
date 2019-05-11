@@ -31,6 +31,7 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
+#include <cmath>
 // xw 2.8
 #include <wx/filename.h>
 
