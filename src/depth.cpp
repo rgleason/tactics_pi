@@ -42,6 +42,7 @@ extern int g_iDashDepthUnit;
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
+#include <cmath>
 
 TacticsInstrument_Depth::TacticsInstrument_Depth( wxWindow *parent, wxWindowID id, wxString title) :
       TacticsInstrument(parent, id, title, OCPN_DBP_STC_DPT | OCPN_DBP_STC_TMP)

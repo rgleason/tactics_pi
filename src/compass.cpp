@@ -40,6 +40,7 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
+#include <cmath>
 
 TacticsInstrument_Compass::TacticsInstrument_Compass( wxWindow *parent, wxWindowID id, wxString title, int cap_flag) :
       TacticsInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360)

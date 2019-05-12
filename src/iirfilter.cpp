@@ -1,6 +1,7 @@
 #include "iirfilter.h"
 
 #include <wx/math.h>
+#include <cmath>
 
 iirfilter::iirfilter(double fc, int tp) {
     wxASSERT(tp == IIRFILTER_TYPE_DEG || tp == IIRFILTER_TYPE_LINEAR || tp == IIRFILTER_TYPE_RAD);
