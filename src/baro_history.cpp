@@ -66,7 +66,6 @@ TacticsInstrument_BaroHistory::TacticsInstrument_BaroHistory( wxWindow *parent, 
         m_ExpSmoothArrayPressure[idx] = -1;
         m_ArrayRecTime[idx] = wxDateTime::Now( ).GetTm( );
         m_ArrayRecTime[idx].year = 999;
-
       }
       alpha=0.01;  //smoothing constant
       m_WindowRect=GetClientRect();
@@ -271,8 +270,7 @@ void TacticsInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
   //determine the time range of the available data (=oldest data value)
   int i=0;
   while(m_ArrayRecTime[i].year == 999 && i<BARO_RECORD_COUNT-1) i++;
-  if (i == BARO_RECORD_COUNT -1) {  
-    min=0;
+  if (i == BARO_RECORD_COUNT -1) {  min=0;
     hour=0;
   }
   else {
