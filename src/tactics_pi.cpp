@@ -2967,9 +2967,9 @@ bool tactics_pi::LoadConfig(void)
 		pConf->Read( _T("UTCOffset"), &g_iUTCOffset, 0 );
 		pConf->Read(_T("WindSpeedUnit"), &g_iDashWindSpeedUnit, 0);
 		pConf->Read(_T("CurrentDampingFactor"), &g_dalpha_currdir, 0.008);
-		pConf->Read(_T("LaylineDampingFactor"), &g_dalphaLaylinedDampFactor, 0.15);
+		pConf->Read(_T("LaylineDampingFactor"), &g_dalphaLaylinedDampFactor, 0.2);
 		pConf->Read(_T("LaylineLenghtonChart"), &g_dLaylineLengthonChart, 10.0);
-		pConf->Read(_T("MinLaylineWidth"), &g_iMinLaylineWidth, 4);
+		pConf->Read(_T("MinLaylineWidth"), &g_iMinLaylineWidth, 2);
 		pConf->Read(_T("MaxLaylineWidth"), &g_iMaxLaylineWidth, 30);
 		pConf->Read(_T("LaylineWidthDampingFactor"), &g_dalphaDeltCoG, 0.25);
 		pConf->Read(_T("ShowCurrentOnChart"), &g_bDisplayCurrentOnChart, false);
