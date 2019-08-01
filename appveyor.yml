@@ -79,7 +79,7 @@ deploy:
 
   provider: GitHub
   auth_token:
-    secure: VVAVg9a8n+XgesI85/cXrXyNeStivq8FynlajE94lGUtzDGeu5PMWI5f1OSYg0tS
+    secure: 4lVARG60e4KT0VLTygqcYRXcmPJd5gBLgeFukcqG1f1NXWXLQlRqCrSxDNwrLqjr
   artifact: installer, portable
   draft: true
   prerelease: true
