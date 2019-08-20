@@ -36,7 +36,6 @@
 
 #include <typeinfo>
 #include "tactics_pi.h"
-#include "version.h"
 #include "icons.h"
 #include "wx/jsonreader.h"
 #include "wx/jsonwriter.h"
