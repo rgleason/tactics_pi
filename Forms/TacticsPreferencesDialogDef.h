@@ -166,6 +166,11 @@ class TacticsPreferencesDialogDef : public wxDialog
 		wxStaticText* m_staticTextDate;
 		wxStaticText* m_staticTextDateVal;
 		wxStaticLine* m_staticline1;
+		wxStaticText* m_staticText50;
+		wxStaticText* m_staticText51;
+		wxStaticText* m_staticTextAboutData;
+		wxStaticText* m_staticText53;
+		wxStaticText* m_staticTextAboutPolar;
 		wxStaticLine* m_staticline3;
 		wxStaticText* m_staticTextOther;
 		wxStaticText* m_staticTextOtherVal;

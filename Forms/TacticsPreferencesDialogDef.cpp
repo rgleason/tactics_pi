@@ -825,22 +825,58 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 	m_staticTextDateVal->Wrap( -1 );
 	fgSizerAboutLayout->Add( m_staticTextDateVal, 0, wxALL, 2 );
 
+
+	bSizer2->Add( fgSizerAboutLayout, 0, wxALL|wxEXPAND, 2 );
+
 	m_staticline1 = new wxStaticLine( m_panelAbout, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	fgSizerAboutLayout->Add( m_staticline1, 0, wxEXPAND | wxALL, 0 );
+	bSizer2->Add( m_staticline1, 0, wxEXPAND | wxALL, 0 );
+
+	m_staticText50 = new wxStaticText( m_panelAbout, wxID_ANY, _("OCPN Tactics Directories:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText50->Wrap( -1 );
+	bSizer2->Add( m_staticText50, 0, wxALL, 5 );
+
+	wxFlexGridSizer* fgSizer202;
+	fgSizer202 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer202->SetFlexibleDirection( wxBOTH );
+	fgSizer202->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_staticText51 = new wxStaticText( m_panelAbout, wxID_ANY, _("Data:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText51->Wrap( -1 );
+	fgSizer202->Add( m_staticText51, 0, wxALL, 5 );
+
+	m_staticTextAboutData = new wxStaticText( m_panelAbout, wxID_ANY, _("Data Directory"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticTextAboutData->Wrap( -1 );
+	fgSizer202->Add( m_staticTextAboutData, 0, wxALL, 5 );
+
+	m_staticText53 = new wxStaticText( m_panelAbout, wxID_ANY, _("Polar:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText53->Wrap( -1 );
+	fgSizer202->Add( m_staticText53, 0, wxALL, 5 );
+
+	m_staticTextAboutPolar = new wxStaticText( m_panelAbout, wxID_ANY, _("Polar Directory"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticTextAboutPolar->Wrap( -1 );
+	fgSizer202->Add( m_staticTextAboutPolar, 0, wxALL, 5 );
+
+
+	bSizer2->Add( fgSizer202, 0, wxEXPAND, 5 );
 
 	m_staticline3 = new wxStaticLine( m_panelAbout, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	fgSizerAboutLayout->Add( m_staticline3, 0, wxEXPAND | wxALL, 0 );
+	bSizer2->Add( m_staticline3, 0, wxEXPAND | wxALL, 5 );
+
+	wxFlexGridSizer* fgSizer211;
+	fgSizer211 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer211->SetFlexibleDirection( wxBOTH );
+	fgSizer211->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	m_staticTextOther = new wxStaticText( m_panelAbout, wxID_ANY, _("Other:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextOther->Wrap( -1 );
-	fgSizerAboutLayout->Add( m_staticTextOther, 0, wxALL, 2 );
+	fgSizer211->Add( m_staticTextOther, 0, wxALL, 2 );
 
 	m_staticTextOtherVal = new wxStaticText( m_panelAbout, wxID_ANY, _("Please report problems using FlySpray at:\nhttps://opencpn.org/flyspray/index.php?project=73&do=index&switch=1\n\nor\n\nat the OpenCPN forum:\nhttp://www.cruisersforum.com/forums/f134\n\nor\n\nRaise an issue in GIT at:\nhttps://github.com/rgleason/tacktics_pi/issues\n"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextOtherVal->Wrap( -1 );
-	fgSizerAboutLayout->Add( m_staticTextOtherVal, 0, wxALL, 2 );
+	fgSizer211->Add( m_staticTextOtherVal, 1, wxALL, 2 );
 
 
-	bSizer2->Add( fgSizerAboutLayout, 1, wxALL|wxEXPAND, 2 );
+	bSizer2->Add( fgSizer211, 0, wxEXPAND, 5 );
 
 
 	m_panelAbout->SetSizer( bSizer2 );

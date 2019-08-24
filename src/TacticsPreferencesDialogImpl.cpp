@@ -165,6 +165,7 @@ TacticsPreferencesDialogDef( parent )
     m_staticTextDateVal->SetLabel( wxT(TOSTRING(PLUGIN_VERSION_DATE)) );
     m_staticTextOCPNAPIVersionMajorVal->SetLabel( wxT(TOSTRING(OCPN_API_VERSION_MAJOR)) );
     m_staticTextOCPNAPIVersionMinorVal->SetLabel( wxT(TOSTRING(OCPN_API_VERSION_MINOR)) );
+    m_staticTextAboutPolar->SetLabel(g_path_to_PolarFile);
     
     curSel = -1;
     for (size_t i = 0; i < m_Config.GetCount(); i++) {
