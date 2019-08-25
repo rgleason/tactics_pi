@@ -570,7 +570,7 @@ int tactics_pi::Init(void)
 	LoadConfig();
 
 	BoatPolar = new Polar(this);
-	if (g_path_to_PolarFile != _T("NULL"))
+	if (!(g_path_to_PolarFile == _T("NULL") || g_path_to_PolarFile.Find(_T("NULL")) != wxNOT_FOUND))
 		BoatPolar->loadPolar(g_path_to_PolarFile);
 	else
 		BoatPolar->loadPolar(_T("NULL"));
