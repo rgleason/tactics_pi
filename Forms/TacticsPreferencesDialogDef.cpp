@@ -755,7 +755,7 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 
 	m_staticTextVersion = new wxStaticText( m_panelAbout, wxID_ANY, _("Version:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextVersion->Wrap( -1 );
-	fgSizerAboutLayout->Add( m_staticTextVersion, 0, wxALL, 2 );
+	fgSizerAboutLayout->Add( m_staticTextVersion, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2 );
 
 	wxFlexGridSizer* fgSizer2;
 	fgSizer2 = new wxFlexGridSizer( 0, 6, 0, 0 );
@@ -764,27 +764,27 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 
 	m_staticTextMajor = new wxStaticText( m_panelAbout, wxID_ANY, _("Major:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextMajor->Wrap( -1 );
-	fgSizer2->Add( m_staticTextMajor, 0, wxALL, 2 );
+	fgSizer2->Add( m_staticTextMajor, 0, wxALL, 5 );
 
 	m_staticTextMajorVal = new wxStaticText( m_panelAbout, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextMajorVal->Wrap( -1 );
-	fgSizer2->Add( m_staticTextMajorVal, 0, wxALL, 2 );
+	fgSizer2->Add( m_staticTextMajorVal, 0, wxALL, 5 );
 
 	m_staticTextMinor = new wxStaticText( m_panelAbout, wxID_ANY, _("Minor:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextMinor->Wrap( -1 );
-	fgSizer2->Add( m_staticTextMinor, 0, wxALL, 2 );
+	fgSizer2->Add( m_staticTextMinor, 0, wxALL, 5 );
 
 	m_staticTextMinorVal = new wxStaticText( m_panelAbout, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextMinorVal->Wrap( -1 );
-	fgSizer2->Add( m_staticTextMinorVal, 0, wxALL, 2 );
+	fgSizer2->Add( m_staticTextMinorVal, 0, wxALL, 5 );
 
 	m_staticTextPatch = new wxStaticText( m_panelAbout, wxID_ANY, _("Patch:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextPatch->Wrap( -1 );
-	fgSizer2->Add( m_staticTextPatch, 0, wxALL, 2 );
+	fgSizer2->Add( m_staticTextPatch, 0, wxALL, 5 );
 
 	m_staticTextPatchVal = new wxStaticText( m_panelAbout, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextPatchVal->Wrap( -1 );
-	fgSizer2->Add( m_staticTextPatchVal, 0, wxALL, 2 );
+	fgSizer2->Add( m_staticTextPatchVal, 0, wxALL, 5 );
 
 
 	fgSizerAboutLayout->Add( fgSizer2, 1, wxEXPAND, 2 );

@@ -6916,7 +6916,7 @@
                                                         <property name="border">2</property>
                                                         <property name="flag">wxALL|wxEXPAND</property>
                                                         <property name="proportion">0</property>
-                                                        <object class="wxFlexGridSizer" expanded="0">
+                                                        <object class="wxFlexGridSizer" expanded="1">
                                                             <property name="cols">2</property>
                                                             <property name="flexible_direction">wxBOTH</property>
                                                             <property name="growablecols">1</property>
@@ -7052,7 +7052,7 @@
                                                             </object>
                                                             <object class="sizeritem" expanded="0">
                                                                 <property name="border">2</property>
-                                                                <property name="flag">wxALL</property>
+                                                                <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
                                                                 <property name="proportion">0</property>
                                                                 <object class="wxStaticText" expanded="0">
                                                                     <property name="BottomDockable">1</property>
@@ -7111,11 +7111,11 @@
                                                                     <property name="wrap">-1</property>
                                                                 </object>
                                                             </object>
-                                                            <object class="sizeritem" expanded="0">
+                                                            <object class="sizeritem" expanded="1">
                                                                 <property name="border">2</property>
                                                                 <property name="flag">wxEXPAND</property>
                                                                 <property name="proportion">1</property>
-                                                                <object class="wxFlexGridSizer" expanded="0">
+                                                                <object class="wxFlexGridSizer" expanded="1">
                                                                     <property name="cols">6</property>
                                                                     <property name="flexible_direction">wxBOTH</property>
                                                                     <property name="growablecols"></property>
@@ -7128,7 +7128,7 @@
                                                                     <property name="rows">0</property>
                                                                     <property name="vgap">0</property>
                                                                     <object class="sizeritem" expanded="0">
-                                                                        <property name="border">2</property>
+                                                                        <property name="border">5</property>
                                                                         <property name="flag">wxALL</property>
                                                                         <property name="proportion">0</property>
                                                                         <object class="wxStaticText" expanded="0">
@@ -7189,7 +7189,7 @@
                                                                         </object>
                                                                     </object>
                                                                     <object class="sizeritem" expanded="0">
-                                                                        <property name="border">2</property>
+                                                                        <property name="border">5</property>
                                                                         <property name="flag">wxALL</property>
                                                                         <property name="proportion">0</property>
                                                                         <object class="wxStaticText" expanded="0">
@@ -7250,7 +7250,7 @@
                                                                         </object>
                                                                     </object>
                                                                     <object class="sizeritem" expanded="0">
-                                                                        <property name="border">2</property>
+                                                                        <property name="border">5</property>
                                                                         <property name="flag">wxALL</property>
                                                                         <property name="proportion">0</property>
                                                                         <object class="wxStaticText" expanded="0">
@@ -7311,7 +7311,7 @@
                                                                         </object>
                                                                     </object>
                                                                     <object class="sizeritem" expanded="0">
-                                                                        <property name="border">2</property>
+                                                                        <property name="border">5</property>
                                                                         <property name="flag">wxALL</property>
                                                                         <property name="proportion">0</property>
                                                                         <object class="wxStaticText" expanded="0">
@@ -7372,7 +7372,7 @@
                                                                         </object>
                                                                     </object>
                                                                     <object class="sizeritem" expanded="0">
-                                                                        <property name="border">2</property>
+                                                                        <property name="border">5</property>
                                                                         <property name="flag">wxALL</property>
                                                                         <property name="proportion">0</property>
                                                                         <object class="wxStaticText" expanded="0">
@@ -7433,7 +7433,7 @@
                                                                         </object>
                                                                     </object>
                                                                     <object class="sizeritem" expanded="0">
-                                                                        <property name="border">2</property>
+                                                                        <property name="border">5</property>
                                                                         <property name="flag">wxALL</property>
                                                                         <property name="proportion">0</property>
                                                                         <object class="wxStaticText" expanded="0">
