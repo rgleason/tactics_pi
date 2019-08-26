@@ -32,6 +32,7 @@
 #include <wx/spinctrl.h>
 #include <wx/scrolwin.h>
 #include <wx/radiobut.h>
+#include <wx/filepicker.h>
 #include <wx/statline.h>
 #include <wx/notebook.h>
 #include <wx/dialog.h>
@@ -67,6 +68,7 @@ class TacticsPreferencesDialogDef : public wxDialog
 		wxButton* m_buttonUp;
 		wxButton* m_buttonDown;
 		wxScrolledWindow* m_scrolledWindowAppearance;
+		wxFlexGridSizer* m_fgSizerFonts;
 		wxStaticText* m_staticTextTitle;
 		wxFontPickerCtrl* m_fontPickerTitle;
 		wxStaticText* m_staticTextData;
@@ -139,7 +141,7 @@ class TacticsPreferencesDialogDef : public wxDialog
 		wxCheckBox* m_checkBoxUseSOGforTWCalc;
 		wxCheckBox* m_checkBoxShowWindbarbOnChart;
 		wxStaticText* m_staticText49;
-		wxTextCtrl* m_textCtrlPolar;
+		wxFilePickerCtrl* m_filePickerPolar;
 		wxButton* m_buttonLoadPolar;
 		wxCheckBox* m_checkBoxShowPolarOnChart;
 		wxRadioButton* m_radioBtnExpNKE;
@@ -165,12 +167,6 @@ class TacticsPreferencesDialogDef : public wxDialog
 		wxStaticText* m_staticTextOCPNAPIVersionMinorVal;
 		wxStaticText* m_staticTextDate;
 		wxStaticText* m_staticTextDateVal;
-		wxStaticLine* m_staticline1;
-		wxStaticText* m_staticText50;
-		wxStaticText* m_staticText51;
-		wxStaticText* m_staticTextAboutData;
-		wxStaticText* m_staticText53;
-		wxStaticText* m_staticTextAboutPolar;
 		wxStaticLine* m_staticline3;
 		wxStaticText* m_staticTextOther;
 		wxStaticText* m_staticTextOtherVal;

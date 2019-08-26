@@ -166,46 +166,46 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 	wxStaticBoxSizer* sbSizerFonts;
 	sbSizerFonts = new wxStaticBoxSizer( new wxStaticBox( m_scrolledWindowAppearance, wxID_ANY, _("Fonts") ), wxHORIZONTAL );
 
-	wxFlexGridSizer* fgSizer11;
-	fgSizer11 = new wxFlexGridSizer( 0, 2, 0, 0 );
-	fgSizer11->AddGrowableCol( 1 );
-	fgSizer11->SetFlexibleDirection( wxBOTH );
-	fgSizer11->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	m_fgSizerFonts = new wxFlexGridSizer( 0, 2, 0, 0 );
+	m_fgSizerFonts->AddGrowableCol( 0 );
+	m_fgSizerFonts->AddGrowableCol( 1 );
+	m_fgSizerFonts->SetFlexibleDirection( wxBOTH );
+	m_fgSizerFonts->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	m_staticTextTitle = new wxStaticText( sbSizerFonts->GetStaticBox(), wxID_ANY, _("Title:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextTitle->Wrap( -1 );
-	fgSizer11->Add( m_staticTextTitle, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2 );
+	m_fgSizerFonts->Add( m_staticTextTitle, 1, wxALIGN_CENTER_VERTICAL|wxALL, 2 );
 
-	m_fontPickerTitle = new wxFontPickerCtrl( sbSizerFonts->GetStaticBox(), wxID_ANY, wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Galapogos BRK") ), wxDefaultPosition, wxDefaultSize, wxFNTP_DEFAULT_STYLE|wxFNTP_FONTDESC_AS_LABEL );
+	m_fontPickerTitle = new wxFontPickerCtrl( sbSizerFonts->GetStaticBox(), wxID_ANY, wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Sans") ), wxDefaultPosition, wxDefaultSize, wxFNTP_FONTDESC_AS_LABEL );
 	m_fontPickerTitle->SetMaxPointSize( 100 );
-	fgSizer11->Add( m_fontPickerTitle, 2, wxALIGN_RIGHT|wxALL|wxEXPAND, 0 );
+	m_fgSizerFonts->Add( m_fontPickerTitle, 0, wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 0 );
 
 	m_staticTextData = new wxStaticText( sbSizerFonts->GetStaticBox(), wxID_ANY, _("Data:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextData->Wrap( -1 );
-	fgSizer11->Add( m_staticTextData, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2 );
+	m_fgSizerFonts->Add( m_staticTextData, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2 );
 
-	m_fontPickerData = new wxFontPickerCtrl( sbSizerFonts->GetStaticBox(), wxID_ANY, wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_BOLD, false, wxT("False Positive Round BRK") ), wxDefaultPosition, wxDefaultSize, wxFNTP_DEFAULT_STYLE|wxFNTP_FONTDESC_AS_LABEL|wxFNTP_USEFONT_FOR_LABEL );
+	m_fontPickerData = new wxFontPickerCtrl( sbSizerFonts->GetStaticBox(), wxID_ANY, wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Sans") ), wxDefaultPosition, wxDefaultSize, wxFNTP_FONTDESC_AS_LABEL );
 	m_fontPickerData->SetMaxPointSize( 100 );
-	fgSizer11->Add( m_fontPickerData, 2, wxALIGN_RIGHT|wxALL|wxEXPAND, 0 );
+	m_fgSizerFonts->Add( m_fontPickerData, 0, wxALL|wxEXPAND, 0 );
 
 	m_staticTextLabel = new wxStaticText( sbSizerFonts->GetStaticBox(), wxID_ANY, _("Label:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextLabel->Wrap( -1 );
-	fgSizer11->Add( m_staticTextLabel, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2 );
+	m_fgSizerFonts->Add( m_staticTextLabel, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2 );
 
-	m_fontPickerLabel = new wxFontPickerCtrl( sbSizerFonts->GetStaticBox(), wxID_ANY, wxNullFont, wxDefaultPosition, wxDefaultSize, wxFNTP_DEFAULT_STYLE|wxFNTP_FONTDESC_AS_LABEL|wxFNTP_USEFONT_FOR_LABEL );
+	m_fontPickerLabel = new wxFontPickerCtrl( sbSizerFonts->GetStaticBox(), wxID_ANY, wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Sans") ), wxDefaultPosition, wxDefaultSize, wxFNTP_FONTDESC_AS_LABEL );
 	m_fontPickerLabel->SetMaxPointSize( 100 );
-	fgSizer11->Add( m_fontPickerLabel, 2, wxALIGN_RIGHT|wxALL|wxEXPAND, 0 );
+	m_fgSizerFonts->Add( m_fontPickerLabel, 0, wxALL|wxEXPAND, 0 );
 
 	m_staticTextSmall = new wxStaticText( sbSizerFonts->GetStaticBox(), wxID_ANY, _("Small:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextSmall->Wrap( -1 );
-	fgSizer11->Add( m_staticTextSmall, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2 );
+	m_fgSizerFonts->Add( m_staticTextSmall, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2 );
 
-	m_fontPickerSmall = new wxFontPickerCtrl( sbSizerFonts->GetStaticBox(), wxID_ANY, wxNullFont, wxDefaultPosition, wxDefaultSize, wxFNTP_DEFAULT_STYLE|wxFNTP_FONTDESC_AS_LABEL|wxFNTP_USEFONT_FOR_LABEL );
+	m_fontPickerSmall = new wxFontPickerCtrl( sbSizerFonts->GetStaticBox(), wxID_ANY, wxNullFont, wxDefaultPosition, wxDefaultSize, wxFNTP_FONTDESC_AS_LABEL );
 	m_fontPickerSmall->SetMaxPointSize( 100 );
-	fgSizer11->Add( m_fontPickerSmall, 2, wxALIGN_RIGHT|wxALL|wxEXPAND, 0 );
+	m_fgSizerFonts->Add( m_fontPickerSmall, 0, wxALIGN_LEFT|wxALL|wxEXPAND, 0 );
 
 
-	sbSizerFonts->Add( fgSizer11, 1, wxALL|wxEXPAND, 2 );
+	sbSizerFonts->Add( m_fgSizerFonts, 1, wxALL|wxEXPAND, 2 );
 
 
 	bSizer10->Add( sbSizerFonts, 1, wxEXPAND, 2 );
@@ -299,7 +299,7 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 	m_scrolledWindowAppearance->SetSizer( fgSizer10 );
 	m_scrolledWindowAppearance->Layout();
 	fgSizer10->Fit( m_scrolledWindowAppearance );
-	m_notebookPreferences->AddPage( m_scrolledWindowAppearance, _("Appearance"), false );
+	m_notebookPreferences->AddPage( m_scrolledWindowAppearance, _("Appearance"), true );
 	m_scrolledWindowPerformanceParameters = new wxScrolledWindow( m_notebookPreferences, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxALWAYS_SHOW_SB|wxTAB_TRAVERSAL|wxVSCROLL );
 	m_scrolledWindowPerformanceParameters->SetScrollRate( 5, 5 );
 	wxFlexGridSizer* fgSizer14;
@@ -666,8 +666,8 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 	m_staticText49->Wrap( -1 );
 	fgSizer22->Add( m_staticText49, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2 );
 
-	m_textCtrlPolar = new wxTextCtrl( sbSizer10->GetStaticBox(), wxID_ANY, _("NULL"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer22->Add( m_textCtrlPolar, 0, wxALL|wxEXPAND, 2 );
+	m_filePickerPolar = new wxFilePickerCtrl( sbSizer10->GetStaticBox(), wxID_ANY, wxT("/data/public/working area/opencpn/tactics_pi/Forms/TacticsPreferencesDialogDef.cpp"), _("Select a file"), _("*.*"), wxDefaultPosition, wxDefaultSize, wxFLP_OPEN );
+	fgSizer22->Add( m_filePickerPolar, 0, wxALL|wxEXPAND, 5 );
 
 	m_buttonLoadPolar = new wxButton( sbSizer10->GetStaticBox(), wxID_ANY, _("Load"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer22->Add( m_buttonLoadPolar, 0, wxALL, 2 );
@@ -734,7 +734,7 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 	m_scrolledWindowPerformanceParameters->SetSizer( fgSizer14 );
 	m_scrolledWindowPerformanceParameters->Layout();
 	fgSizer14->Fit( m_scrolledWindowPerformanceParameters );
-	m_notebookPreferences->AddPage( m_scrolledWindowPerformanceParameters, _("Performance Parameters"), true );
+	m_notebookPreferences->AddPage( m_scrolledWindowPerformanceParameters, _("Performance Parameters"), false );
 	m_panelAbout = new wxPanel( m_notebookPreferences, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer2;
 	bSizer2 = new wxBoxSizer( wxVERTICAL );
@@ -755,7 +755,7 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 
 	m_staticTextVersion = new wxStaticText( m_panelAbout, wxID_ANY, _("Version:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextVersion->Wrap( -1 );
-	fgSizerAboutLayout->Add( m_staticTextVersion, 0, wxALL, 2 );
+	fgSizerAboutLayout->Add( m_staticTextVersion, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2 );
 
 	wxFlexGridSizer* fgSizer2;
 	fgSizer2 = new wxFlexGridSizer( 0, 6, 0, 0 );
@@ -764,27 +764,27 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 
 	m_staticTextMajor = new wxStaticText( m_panelAbout, wxID_ANY, _("Major:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextMajor->Wrap( -1 );
-	fgSizer2->Add( m_staticTextMajor, 0, wxALL, 2 );
+	fgSizer2->Add( m_staticTextMajor, 0, wxALL, 5 );
 
 	m_staticTextMajorVal = new wxStaticText( m_panelAbout, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextMajorVal->Wrap( -1 );
-	fgSizer2->Add( m_staticTextMajorVal, 0, wxALL, 2 );
+	fgSizer2->Add( m_staticTextMajorVal, 0, wxALL, 5 );
 
 	m_staticTextMinor = new wxStaticText( m_panelAbout, wxID_ANY, _("Minor:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextMinor->Wrap( -1 );
-	fgSizer2->Add( m_staticTextMinor, 0, wxALL, 2 );
+	fgSizer2->Add( m_staticTextMinor, 0, wxALL, 5 );
 
 	m_staticTextMinorVal = new wxStaticText( m_panelAbout, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextMinorVal->Wrap( -1 );
-	fgSizer2->Add( m_staticTextMinorVal, 0, wxALL, 2 );
+	fgSizer2->Add( m_staticTextMinorVal, 0, wxALL, 5 );
 
 	m_staticTextPatch = new wxStaticText( m_panelAbout, wxID_ANY, _("Patch:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextPatch->Wrap( -1 );
-	fgSizer2->Add( m_staticTextPatch, 0, wxALL, 2 );
+	fgSizer2->Add( m_staticTextPatch, 0, wxALL, 5 );
 
 	m_staticTextPatchVal = new wxStaticText( m_panelAbout, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticTextPatchVal->Wrap( -1 );
-	fgSizer2->Add( m_staticTextPatchVal, 0, wxALL, 2 );
+	fgSizer2->Add( m_staticTextPatchVal, 0, wxALL, 5 );
 
 
 	fgSizerAboutLayout->Add( fgSizer2, 1, wxEXPAND, 2 );
@@ -827,37 +827,6 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 
 
 	bSizer2->Add( fgSizerAboutLayout, 0, wxALL|wxEXPAND, 2 );
-
-	m_staticline1 = new wxStaticLine( m_panelAbout, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	bSizer2->Add( m_staticline1, 0, wxEXPAND | wxALL, 0 );
-
-	m_staticText50 = new wxStaticText( m_panelAbout, wxID_ANY, _("OCPN Tactics Directories:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText50->Wrap( -1 );
-	bSizer2->Add( m_staticText50, 0, wxALL, 5 );
-
-	wxFlexGridSizer* fgSizer202;
-	fgSizer202 = new wxFlexGridSizer( 0, 2, 0, 0 );
-	fgSizer202->SetFlexibleDirection( wxBOTH );
-	fgSizer202->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-
-	m_staticText51 = new wxStaticText( m_panelAbout, wxID_ANY, _("Data:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText51->Wrap( -1 );
-	fgSizer202->Add( m_staticText51, 0, wxALL, 5 );
-
-	m_staticTextAboutData = new wxStaticText( m_panelAbout, wxID_ANY, _("Data Directory"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticTextAboutData->Wrap( -1 );
-	fgSizer202->Add( m_staticTextAboutData, 0, wxALL, 5 );
-
-	m_staticText53 = new wxStaticText( m_panelAbout, wxID_ANY, _("Polar:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText53->Wrap( -1 );
-	fgSizer202->Add( m_staticText53, 0, wxALL, 5 );
-
-	m_staticTextAboutPolar = new wxStaticText( m_panelAbout, wxID_ANY, _("Polar Directory"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticTextAboutPolar->Wrap( -1 );
-	fgSizer202->Add( m_staticTextAboutPolar, 0, wxALL, 5 );
-
-
-	bSizer2->Add( fgSizer202, 0, wxEXPAND, 5 );
 
 	m_staticline3 = new wxStaticLine( m_panelAbout, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
 	bSizer2->Add( m_staticline3, 0, wxEXPAND | wxALL, 5 );

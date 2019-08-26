@@ -144,7 +144,7 @@ TacticsPreferencesDialogDef( parent )
     m_radioBtnUseHeelSensor->SetValue(g_bUseHeelSensor);
     m_radioBtnFixedLeeway->SetValue(g_bUseFixedLeeway);
     m_radioBtnHeelnput->SetValue(g_bManHeelInput);
-    m_textCtrlPolar->SetValue(g_path_to_PolarFile);
+    m_filePickerPolar->SetPath(g_path_to_PolarFile);
     m_checkBoxCorrectSTWwithLeeway->SetValue(g_bCorrectSTWwithLeeway);
     m_checkBoxCorrectAWwithHeel->SetValue(g_bCorrectAWwithHeel);
     m_checkBoxForceTrueWindCalculation->SetValue(g_bForceTrueWindCalculation);
@@ -165,7 +165,6 @@ TacticsPreferencesDialogDef( parent )
     m_staticTextDateVal->SetLabel( wxT(TOSTRING(PLUGIN_VERSION_DATE)) );
     m_staticTextOCPNAPIVersionMajorVal->SetLabel( wxT(TOSTRING(OCPN_API_VERSION_MAJOR)) );
     m_staticTextOCPNAPIVersionMinorVal->SetLabel( wxT(TOSTRING(OCPN_API_VERSION_MINOR)) );
-    m_staticTextAboutPolar->SetLabel(g_path_to_PolarFile);
     
     curSel = -1;
     for (size_t i = 0; i < m_Config.GetCount(); i++) {
@@ -371,7 +370,7 @@ void TacticsPreferencesDialogImpl::SaveTacticsConfig()
     g_bUseHeelSensor = m_radioBtnUseHeelSensor->GetValue();
     g_bUseFixedLeeway = m_radioBtnFixedLeeway->GetValue();
     g_bManHeelInput = m_radioBtnHeelnput->GetValue();
-    g_path_to_PolarFile = m_textCtrlPolar->GetValue();
+    g_path_to_PolarFile = m_filePickerPolar->GetPath();
     g_bCorrectSTWwithLeeway = m_checkBoxCorrectSTWwithLeeway->GetValue();
     g_bCorrectAWwithHeel = m_checkBoxCorrectAWwithHeel->GetValue();
     g_bForceTrueWindCalculation = m_checkBoxForceTrueWindCalculation->GetValue();
@@ -743,32 +742,6 @@ void TacticsPreferencesDialogImpl::FontChanged( void )
     m_staticTextLabel->SetFont(m_fontPickerLabel->GetSelectedFont());
     m_staticTextSmall->SetFont(m_fontPickerSmall->GetSelectedFont());
 
-    m_fontPickerTitle->SetSize(m_fontPickerTitle->GetBestSize());
-    m_fontPickerData->SetSize(m_fontPickerData->GetBestSize());
-    m_fontPickerLabel->SetSize(m_fontPickerLabel->GetBestSize());
-    m_fontPickerSmall->SetSize(m_fontPickerSmall->GetBestSize());
     
-    m_spinCtrlDoubleAlphaDeltCoG->SetSize((m_spinCtrlDoubleAlphaDeltCoG->GetBestSize()));
-    
-}
-
-void TacticsPreferencesDialogImpl::OnUpdateCtrl(wxCommandEvent& event)
-{
-    UpdateCtrl();
-}
-
-void TacticsPreferencesDialogImpl::OnUpdateCtrl(wxSpinDoubleEvent& event)
-{
-    UpdateCtrl();
-}
-
-void TacticsPreferencesDialogImpl::UpdateCtrl()
-{
-    m_spinCtrlDoubleAlphaLaylineDampFactor->SetSize(m_spinCtrlDoubleAlphaLaylineDampFactor->GetBestSize());
-    m_spinCtrlDoubleAlphaDeltCoG->SetSize((m_spinCtrlDoubleAlphaDeltCoG->GetBestSize()));
-    m_scrolledWindowPerformanceParameters->Fit();
-    m_scrolledWindowPerformanceParameters->Layout();
-    this->SetSizer( m_SizerMainSizer );
-    this->Layout();
 }
 

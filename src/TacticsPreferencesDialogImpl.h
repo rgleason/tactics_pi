@@ -59,8 +59,6 @@ protected:
     void OnCancelButtonClick( wxCommandEvent& event );
     void OnApplyButtonClick( wxCommandEvent& event );
     void OnFontChanged( wxFontPickerEvent& event );
-    void OnUpdateCtrl( wxSpinDoubleEvent& event );
-    void OnUpdateCtrl( wxCommandEvent& event );
     
     void SaveTacticsConfig(void);
     void UpdateTacticsButtonsState(void);
@@ -70,7 +68,6 @@ protected:
     int GetRandomNumber(int range_min, int range_max);
     void SaveChanges(void);
     void FontChanged( void );
-    void UpdateCtrl( void );
     
     int  curSel;
     
