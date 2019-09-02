@@ -276,6 +276,8 @@ public:
       bool GetPolarVisibility(wxWindow* parent);
       void OnContextMenuItemCallback(int id);
 
+      wxFileConfig         *m_pconfig;
+      
 private:
       bool LoadConfig(void);
       void ApplyConfig(void);
@@ -288,7 +290,6 @@ private:
 	//added per Canne Dashb_tactics
       static const char *s_common_name;  
 	//added per Canne Dashb_tactics
-      wxFileConfig         *m_pconfig;
       wxAuiManager         *m_pauimgr;
       int                  m_toolbar_item_id;
 

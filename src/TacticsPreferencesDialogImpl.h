@@ -59,6 +59,7 @@ protected:
     void OnCancelButtonClick( wxCommandEvent& event );
     void OnApplyButtonClick( wxCommandEvent& event );
     void OnFontChanged( wxFontPickerEvent& event );
+    void OnClickLoadPolar( wxCommandEvent& event );
     
     void SaveTacticsConfig(void);
     void UpdateTacticsButtonsState(void);
@@ -70,6 +71,8 @@ protected:
     void FontChanged( void );
     
     int  curSel;
+    wxString m_path_to_PolarFile;
+    Polar *m_BoatPolar;
     
 public:
     /** Constructor */

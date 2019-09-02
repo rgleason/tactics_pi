@@ -43,7 +43,7 @@
 #include "performance.h"
 extern int g_iMinLaylineWidth;
 extern int g_iMaxLaylineWidth;
-extern Polar* BoatPolar;
+extern Polar*g_BoatPolar;
 extern PlugIn_Waypoint *m_pMark;
 extern int g_iDashDistanceUnit;
 extern int g_iDashSpeedUnit;
@@ -215,7 +215,7 @@ void TacticsInstrument_PolarCompass::Draw(wxGCDC* bdc)
     }
   //wxLogMessage("-- ..PolarCompass-Draw() - m_TWA=%f m_TWS=%f", m_TWA, m_TWS);
     if (!wxIsNaN(m_TWA) && !wxIsNaN(m_TWS) ){
-      m_PolSpd = BoatPolar->GetPolarSpeed(m_TWA, m_TWS);
+      m_PolSpd =g_BoatPolar->GetPolarSpeed(m_TWA, m_TWS);
       if (!wxIsNaN(m_PolSpd) )
          m_PolSpd_Percent = fromUsrSpeed_Plugin(m_StW, g_iDashSpeedUnit) / m_PolSpd * 100;
       else
@@ -312,13 +312,13 @@ void TacticsInstrument_PolarCompass::DrawWindAngles(wxGCDC* dc)
 		brush.SetColour(cl);
 		dc->SetBrush(brush);
 
-		/* this is fix for a +/-180° round instrument, when m_MainValue is supplied as <0..180><L | R>
+		/* this is fix for a +/-180ï¿½ round instrument, when m_MainValue is supplied as <0..180><L | R>
 		* for example TWA & AWA */
 		double data, TwaCog;
 		// head-up = COG, but TWA is based on Hdt --> add the diff here for a correct display
 		TwaCog = m_TWA; //neu, jetzt HDt 
 
-		/* this is fix for a +/-180° round instrument, when m_MainValue is supplied as <0..180><L | R>
+		/* this is fix for a +/-180ï¿½ round instrument, when m_MainValue is supplied as <0..180><L | R>
 		* for example TWA & AWA */
 		if (m_curTack == _T("\u00B0L"))
 			data = 360 - TwaCog;
@@ -381,8 +381,8 @@ Draw pointers for the optimum target VMG- and CMG Angle (if bearing is available
 void TacticsInstrument_PolarCompass::DrawTargetxMGAngle(wxGCDC* dc){
   if (!wxIsNaN(m_TWS)) {
     // get Target VMG Angle from Polar
-    TargetxMG tvmg_up = BoatPolar->GetTargetVMGUpwind(m_TWS);
-    TargetxMG tvmg_dn = BoatPolar->GetTargetVMGDownwind(m_TWS);
+    TargetxMG tvmg_up =g_BoatPolar->GetTargetVMGUpwind(m_TWS);
+    TargetxMG tvmg_dn =g_BoatPolar->GetTargetVMGDownwind(m_TWS);
     TargetxMG TCMGMax;
     TargetxMG TCMGMin;
 
@@ -396,7 +396,7 @@ void TacticsInstrument_PolarCompass::DrawTargetxMGAngle(wxGCDC* dc){
     }
     if (!wxIsNaN(m_Bearing)){
       if (m_Bearing >= 0 && m_Bearing < 360 && !wxIsNaN(m_TWD)){
-        BoatPolar->Calc_TargetCMG2(m_TWS, m_TWD, m_Bearing, &TCMGMax, &TCMGMin);
+       g_BoatPolar->Calc_TargetCMG2(m_TWS, m_TWD, m_Bearing, &TCMGMax, &TCMGMin);
         if (!wxIsNaN(TCMGMax.TargetAngle))      DrawTargetAngle(dc, TCMGMax.TargetAngle, _T("URED"), 2);
         if (!wxIsNaN(TCMGMin.TargetAngle))      DrawTargetAngle(dc, TCMGMin.TargetAngle, _T("URED"), 1);
       }
@@ -531,7 +531,7 @@ void TacticsInstrument_PolarCompass::DrawPolar(wxGCDC*dc)
     int i;
     for (i = 0; i < POLSTEPS / 2; i++){ //0...179
     //wxLogMessage("-- ..PolarCompass-DrawPolar() - i=%d m_TWS=%f", i, m_TWS);
-      polval[i] = BoatPolar->GetPolarSpeed(i*2 + 1, m_TWS); //polar data is 1...180 !!! i*2 : we draw in 2 degree steps
+      polval[i] =g_BoatPolar->GetPolarSpeed(i*2 + 1, m_TWS); //polar data is 1...180 !!! i*2 : we draw in 2 degree steps
       polval[POLSTEPS - 1 - i] = polval[i];
       if (wxIsNaN(polval[i]))polval[i] = polval[POLSTEPS - 1 - i] = 0.0;
       if (polval[i]>max) max = polval[i];
@@ -572,9 +572,9 @@ void TacticsInstrument_PolarCompass::DrawData(wxGCDC* dc, double value,
 	{
 		if (unit == _T("\u00B0"))
 			text = wxString::Format(format, value) + DEGREE_SIGN;
-		else if (unit == _T("\u00B0L")) // No special display for now, might be XX°< (as in text-only instrument)
+		else if (unit == _T("\u00B0L")) // No special display for now, might be XXï¿½< (as in text-only instrument)
 			text = wxString::Format(format, value) + DEGREE_SIGN;
-		else if (unit == _T("\u00B0R")) // No special display for now, might be >XX°
+		else if (unit == _T("\u00B0R")) // No special display for now, might be >XXï¿½
 			text = wxString::Format(format, value) + DEGREE_SIGN;
 		else if (unit == _T("\u00B0T"))
 			text = wxString::Format(format, value) + DEGREE_SIGN + _T("T");
@@ -739,10 +739,10 @@ void TacticsInstrument_PolarCompass::DrawLaylines(wxGCDC* dc)
 		wxPoint vpoints[3];
 		vpoints[0].x = m_cx;
 		vpoints[0].y = m_cy;
-		vpoints[1].x = m_cx + (m_radius * cos(value1));//neu : für Headup = HDT
-		vpoints[1].y = m_cy + (m_radius * sin(value1));//neu : für Headup = HDT
-		vpoints[2].x = m_cx + (m_radius * cos(value2));//neu : für Headup = HDT
-		vpoints[2].y = m_cy + (m_radius * sin(value2));//neu : für Headup = HDT
+		vpoints[1].x = m_cx + (m_radius * cos(value1));//neu : fï¿½r Headup = HDT
+		vpoints[1].y = m_cy + (m_radius * sin(value1));//neu : fï¿½r Headup = HDT
+		vpoints[2].x = m_cx + (m_radius * cos(value2));//neu : fï¿½r Headup = HDT
+		vpoints[2].y = m_cy + (m_radius * sin(value2));//neu : fï¿½r Headup = HDT
 		dc->DrawArc(vpoints[2], vpoints[1], vpoints[0]);
 
 		/*****************************************************************************************

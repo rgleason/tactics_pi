@@ -43,7 +43,7 @@
 #include "performance.h"
 #include <map>
 
-extern Polar* BoatPolar;
+extern Polar*g_BoatPolar;
 extern wxString g_path_to_PolarLookupOutputFile;
 extern wxString g_path_to_PolarFile;
 extern int g_iDashWindSpeedUnit;
@@ -203,8 +203,8 @@ void TacticsInstrument_PerformanceSingle::SetData(int st, double data, wxString 
 			if (!wxIsNaN(mSTW) && !wxIsNaN(mTWA) && !wxIsNaN(mTWS)){
 
 				if (m_displaytype == POLARSPEED){
-                  double targetspeed = BoatPolar->GetPolarSpeed(mTWA, mTWS);
-                  //double avgtargetspeed = BoatPolar->GetAvgPolarSpeed(mTWA, mTWS);
+                  double targetspeed =g_BoatPolar->GetPolarSpeed(mTWA, mTWS);
+                  //double avgtargetspeed =g_BoatPolar->GetAvgPolarSpeed(mTWA, mTWS);
 
 					if (wxIsNaN(targetspeed) || mSTW == 0)
 						m_data = _T("no polar data");
@@ -216,16 +216,16 @@ void TacticsInstrument_PerformanceSingle::SetData(int st, double data, wxString 
                     }
 				}
 				else if (m_displaytype == POLARVMG){
-					double VMG = BoatPolar->Calc_VMG(mTWA,mSTW);
+					double VMG =g_BoatPolar->Calc_VMG(mTWA,mSTW);
                     double user_VMG = toUsrSpeed_Plugin(VMG, g_iDashSpeedUnit);
 
 					m_data = wxString::Format("%.2f", user_VMG) + _T(" ") + stwunit;
 
 				}
 				else if (m_displaytype == POLARTARGETVMG){
-                  TargetxMG targetVMG = BoatPolar->Calc_TargetVMG(mTWA, mTWS);
+                  TargetxMG targetVMG =g_BoatPolar->Calc_TargetVMG(mTWA, mTWS);
 					if (targetVMG.TargetSpeed > 0) {
-						double VMG = BoatPolar->Calc_VMG(mTWA, mSTW);
+						double VMG =g_BoatPolar->Calc_VMG(mTWA, mSTW);
 						double percent = fabs(VMG / targetVMG.TargetSpeed * 100.);
                         targetVMG.TargetSpeed = toUsrSpeed_Plugin(targetVMG.TargetSpeed, g_iDashSpeedUnit);
 
@@ -236,7 +236,7 @@ void TacticsInstrument_PerformanceSingle::SetData(int st, double data, wxString 
 
 				}
 				else if (m_displaytype == POLARTARGETVMGANGLE){
-					TargetxMG targetVMG = BoatPolar->Calc_TargetVMG(mTWA, mTWS);
+					TargetxMG targetVMG =g_BoatPolar->Calc_TargetVMG(mTWA, mTWS);
 					if (!wxIsNaN(targetVMG.TargetAngle))
 					    m_data = wxString::Format("%.0f", targetVMG.TargetAngle) + _T("\u00B0");
 					else
@@ -248,7 +248,7 @@ void TacticsInstrument_PerformanceSingle::SetData(int st, double data, wxString 
 
 			if (m_displaytype == POLARCMG){
 				if (!wxIsNaN(mSOG) && !wxIsNaN(mCOG) && mBRG>=0) {
-				  mCMG = BoatPolar->Calc_CMG(mCOG, mSOG, mBRG);
+				  mCMG =g_BoatPolar->Calc_CMG(mCOG, mSOG, mBRG);
                   double user_CMG = toUsrSpeed_Plugin(mCMG, g_iDashSpeedUnit);
 				   m_data = wxString::Format("%.2f", user_CMG) + _T(" ") + stwunit;
 				}
@@ -257,14 +257,14 @@ void TacticsInstrument_PerformanceSingle::SetData(int st, double data, wxString 
 
 			}
 			else if (m_displaytype == POLARTARGETCMG){
-              //TargetxMG targetCMG = BoatPolar->Calc_TargetCMG(mTWS, mTWD, mBRG);
+              //TargetxMG targetCMG =g_BoatPolar->Calc_TargetCMG(mTWS, mTWD, mBRG);
               TargetxMG TCMGMax, TCMGMin;
 	          TCMGMax.TargetSpeed = NAN;
               if (!wxIsNaN(mTWS) && !wxIsNaN(mTWD) && mBRG>=0)
-		        BoatPolar->Calc_TargetCMG2 (mTWS, mTWD, mBRG, &TCMGMax, &TCMGMin);
+		       g_BoatPolar->Calc_TargetCMG2 (mTWS, mTWD, mBRG, &TCMGMax, &TCMGMin);
                 //if (!wxIsNaN(targetCMG.TargetSpeed) && targetCMG.TargetSpeed > 0) {
               if (!wxIsNaN(TCMGMax.TargetSpeed) && TCMGMax.TargetSpeed > 0 && !wxIsNaN(mHDT) && !wxIsNaN(mSTW)) {
-					double cmg = BoatPolar->Calc_CMG(mHDT, mSTW, mBRG);
+					double cmg =g_BoatPolar->Calc_CMG(mHDT, mSTW, mBRG);
                     if (!wxIsNaN(cmg) )//&& cmg >=0)
                     {
                       //double percent = fabs(cmg / targetCMG.TargetSpeed * 100.);
@@ -281,11 +281,11 @@ void TacticsInstrument_PerformanceSingle::SetData(int st, double data, wxString 
 			}
             else if (m_displaytype == POLARTARGETCMGANGLE){
               if (!wxIsNaN(mSTW) && mBRG >= 0 && !wxIsNaN(mHDT)) {
-                double cmg = BoatPolar->Calc_CMG(mHDT, mSTW, mBRG);
+                double cmg =g_BoatPolar->Calc_CMG(mHDT, mSTW, mBRG);
                 TargetxMG TCMGMax, TCMGMin;
                 TCMGMax.TargetAngle = NAN;
                 if (!wxIsNaN(mTWS) && !wxIsNaN(mTWD) && mBRG >= 0)
-                  BoatPolar->Calc_TargetCMG2(mTWS, mTWD, mBRG, &TCMGMax, &TCMGMin);
+                 g_BoatPolar->Calc_TargetCMG2(mTWS, mTWD, mBRG, &TCMGMax, &TCMGMin);
                 if (!wxIsNaN(TCMGMax.TargetAngle))
                   m_data = wxString::Format("%.0f", TCMGMax.TargetAngle) + _T("\u00B0");
                 else
@@ -715,8 +715,8 @@ void Polar::CalculateRowAverages(int i, int min, int max)
 }
 /***********************************************************************************
 Return the polar speed with averaging of wind speed.
-We're still roúnding the TWA, as this is a calculated value anyway and I doubt
-it will have an accuracy < 1°.
+We're still roï¿½nding the TWA, as this is a calculated value anyway and I doubt
+it will have an accuracy < 1ï¿½.
 With this simplified approach of averaging only TWS we can reduce some load ...
 ************************************************************************************/
 double Polar::GetPolarSpeed(double twa, double tws)
@@ -729,7 +729,7 @@ double Polar::GetPolarSpeed(double twa, double tws)
 //wxLogMessage("-- GetPolarSpeed() - twa=%f tws=%f", twa, tws);
   if (wxIsNaN(twa) || wxIsNaN(tws))
       return NAN;
-  // to do : limits to be checked (0°, 180°, etc.)
+  // to do : limits to be checked (0ï¿½, 180ï¿½, etc.)
   i_twa = wxRound(twa); //the next lower full true wind angle value of the polar array
   twsmin = (int)tws; //the next lower full true wind speed value of the polar array
   fws = tws - twsmin; // factor tws (how much are we above twsmin)
@@ -742,7 +742,7 @@ double Polar::GetPolarSpeed(double twa, double tws)
 }
 /***********************************************************************************
 Get the polar speed with full averaging of the input data of both TWA and TWS.
-The polar is stored as a lookup table (2dim array) in steps of 1 kt / 1°.
+The polar is stored as a lookup table (2dim array) in steps of 1 kt / 1ï¿½.
 Instead of rounding up/down to the next full value as done in original GetPolarSpeed() we're
 averaging both TWA & TWS.
 Currently not used ...
@@ -752,7 +752,7 @@ double Polar::GetAvgPolarSpeed(double twa, double tws)
   double fangle, fws,  avspd1, avspd2, av_Spd;
   int twsmin, twamin;
 
-  // to do : limits to be checked (0°, 180°, etc.)
+  // to do : limits to be checked (0ï¿½, 180ï¿½, etc.)
   twamin = (int)twa; //the next lower full true wind angle value of the polar array
   twsmin = (int)tws; //the next lower full true wind speed value of the polar array
   fangle = twa - twamin; //factor twa (how much are we above twamin)
@@ -844,7 +844,7 @@ Calculate opt. CMG (angle & speed) for up- and downwind courses with bearing to 
   As this is not (easily) possible (or I don't know how to do), I use another approach :
   The procedure is to determine the diff-angle btw. TWD and BRG. Then we "rotate" the polar
   by this diff-angle. For the given windspeed, we can now query all boatspeeds from the polar
-  in a range of -90°..diff-angle..+90° around the new vertical point (diff-angle), and find the max speed 
+  in a range of -90ï¿½..diff-angle..+90ï¿½ around the new vertical point (diff-angle), and find the max speed 
   with "boatspeed * cos (angle)"; the returned angle is the TWA-angle for opt. CMG
   with reference to TWD
 */
@@ -909,7 +909,7 @@ TWD     : True Wind Direction
 
 boat_speed = boat_speed at target-hdg = speed from polar
 
-As the polar is rotated now (polar-0° is in TWD direction)--> hdg = polarangle + diffangle
+As the polar is rotated now (polar-0ï¿½ is in TWD direction)--> hdg = polarangle + diffangle
 with diffangle = angle btw.TWD and BRG
 
                 ^
@@ -1341,7 +1341,7 @@ void TacticsInstrument_PolarPerformance::SetData(int st, double data, wxString u
 
 /* moved to timer callback routine
 if (!wxIsNaN(m_STW) && !wxIsNaN(m_TWA) && !wxIsNaN(m_TWS)){
-        double m_PolarSpeed = BoatPolar->GetPolarSpeed(m_TWA, m_TWS);
+        double m_PolarSpeed =g_BoatPolar->GetPolarSpeed(m_TWA, m_TWS);
 
         if (wxIsNaN(m_PolarSpeed))
           m_PercentUnit = _T("no polar data");
@@ -1387,7 +1387,7 @@ if (!wxIsNaN(m_STW) && !wxIsNaN(m_TWA) && !wxIsNaN(m_TWS)){
         //show smoothed average percentage instead of "overall max percentage" which is not really useful, especially if it uses the unsmoothed values ...
         m_AvgSpdPercent = mExpSmAvgSpdPercent->GetSmoothVal(m_PolarSpeedPercent);
 
-        // output of everything above 100%, TWA > 30° and >=2 kts
+        // output of everything above 100%, TWA > 30ï¿½ and >=2 kts
         //
         m_AvgTWA = mExpSmAvgTWA->GetSmoothVal(m_TWA);
         m_AvgTWS = mExpSmAvgTWS->GetSmoothVal(m_TWS);
@@ -1402,7 +1402,7 @@ if (!wxIsNaN(m_STW) && !wxIsNaN(m_TWA) && !wxIsNaN(m_TWS)){
 void TacticsInstrument_PolarPerformance::OnPolarPerfUpdTimer(wxTimerEvent & event)
 {
   if (!wxIsNaN(m_STW) && !wxIsNaN(m_TWA) && !wxIsNaN(m_TWS)) {
-    double m_PolarSpeed = BoatPolar->GetPolarSpeed(m_TWA, m_TWS);
+    double m_PolarSpeed =g_BoatPolar->GetPolarSpeed(m_TWA, m_TWS);
 
     if (wxIsNaN(m_PolarSpeed))
       m_PercentUnit = _T("no polar data");

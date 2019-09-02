@@ -71,6 +71,7 @@ extern bool g_bExpPerfData05;
 extern wxString g_sCMGSynonym, g_sVMGSynonym;
 extern wxString g_sDataExportSeparator;
 extern int g_TacticsPrefsTabToOpen;
+extern Polar* g_BoatPolar;
 
 
 TacticsPreferencesDialogImpl::TacticsPreferencesDialogImpl( wxWindow* parent, wxString derivtitle, wxArrayOfTactics config )
@@ -140,6 +141,8 @@ TacticsPreferencesDialogDef( parent )
     m_spinCtrlDoubleHeel25_45->SetValue(g_dheel[5][1]);
     m_spinCtrlDoubleHeel25_90->SetValue(g_dheel[5][2]);
     m_spinCtrlDoubleHeel25_135->SetValue(g_dheel[5][3]);
+    m_path_to_PolarFile = g_path_to_PolarFile;
+    m_BoatPolar = g_BoatPolar;
     
     m_radioBtnUseHeelSensor->SetValue(g_bUseHeelSensor);
     m_radioBtnFixedLeeway->SetValue(g_bUseFixedLeeway);
@@ -156,7 +159,6 @@ TacticsPreferencesDialogDef( parent )
     m_checkBoxExpPerfData03->SetValue(g_bExpPerfData03);
     m_checkBoxExpPerfData04->SetValue(g_bExpPerfData04);
     m_checkBoxExpPerfData05->SetValue(g_bExpPerfData05);
-    
     
     m_staticTextNameVal->SetLabel( wxT("Tactics Plugin") );
     m_staticTextMajorVal->SetLabel(wxString::Format(wxT("%i"), PLUGIN_VERSION_MAJOR ));
@@ -327,6 +329,12 @@ void TacticsPreferencesDialogImpl::OnApplyButtonClick( wxCommandEvent& event )
     event.Skip();
 }
 
+void TacticsPreferencesDialogImpl::OnClickLoadPolar(wxCommandEvent& event)
+{
+    m_path_to_PolarFile = m_filePickerPolar->GetPath();
+    m_BoatPolar->loadPolar(m_path_to_PolarFile);
+}
+
 void TacticsPreferencesDialogImpl::SaveTacticsConfig()
 {
     SetGlobalLocale();
@@ -367,10 +375,12 @@ void TacticsPreferencesDialogImpl::SaveTacticsConfig()
     g_dheel[5][2] = m_spinCtrlDoubleHeel25_90->GetValue();
     g_dheel[5][3] = m_spinCtrlDoubleHeel25_135->GetValue();
     
+    g_path_to_PolarFile = m_path_to_PolarFile;
+    g_BoatPolar = m_BoatPolar;
+    
     g_bUseHeelSensor = m_radioBtnUseHeelSensor->GetValue();
     g_bUseFixedLeeway = m_radioBtnFixedLeeway->GetValue();
     g_bManHeelInput = m_radioBtnHeelnput->GetValue();
-    g_path_to_PolarFile = m_filePickerPolar->GetPath();
     g_bCorrectSTWwithLeeway = m_checkBoxCorrectSTWwithLeeway->GetValue();
     g_bCorrectAWwithHeel = m_checkBoxCorrectAWwithHeel->GetValue();
     g_bForceTrueWindCalculation = m_checkBoxForceTrueWindCalculation->GetValue();
