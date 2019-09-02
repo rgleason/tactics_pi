@@ -186,6 +186,7 @@ class TacticsPreferencesDialogDef : public wxDialog
 		virtual void OnInstrumentDown( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnFontChanged( wxFontPickerEvent& event ) { event.Skip(); }
 		virtual void OnManualHeelUpdate( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnClickLoadPolar( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnApplyButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCancelButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnOKButtonClick( wxCommandEvent& event ) { event.Skip(); }

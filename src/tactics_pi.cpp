@@ -83,7 +83,7 @@ double g_dalpha_currdir;
 int g_iMinLaylineWidth;
 int g_iMaxLaylineWidth;
 double g_dLaylineLengthonChart;
-Polar* BoatPolar;
+Polar* g_BoatPolar;
 bool g_bDisplayCurrentOnChart;
 wxString g_path_to_PolarFile;
 PlugIn_Route *m_pRoute = NULL;
@@ -569,11 +569,11 @@ int tactics_pi::Init(void)
 	//    And load the configuration items
 	LoadConfig();
 
-	BoatPolar = new Polar(this);
+	g_BoatPolar = new Polar(this);
 	if (!(g_path_to_PolarFile == _T("NULL") || g_path_to_PolarFile.Find(_T("NULL")) != wxNOT_FOUND))
-		BoatPolar->loadPolar(g_path_to_PolarFile);
+		g_BoatPolar->loadPolar(g_path_to_PolarFile);
 	else
-		BoatPolar->loadPolar(_T("NULL"));
+		g_BoatPolar->loadPolar(_T("NULL"));
 	//    This PlugIn needs a toolbar icon
 	wxString shareLocn = *GetpSharedDataLocation() +
 		_T("plugins") + wxFileName::GetPathSeparator() +
@@ -964,7 +964,7 @@ the polar data
 **********************************************************************************/
 double CalcPolarTimeToMark(double distance, double twa, double tws)
 {
-	double pspd = BoatPolar->GetPolarSpeed(twa, tws);
+	double pspd = g_BoatPolar->GetPolarSpeed(twa, tws);
 	return distance / pspd;
 }
 /*********************************************************************************
@@ -1220,9 +1220,9 @@ void tactics_pi::DoRenderLaylineGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort
 				directLineTimeToMark = CalcPolarTimeToMark(DistToMark, directLineTWA, tws_kts);
 				if (wxIsNaN(directLineTimeToMark)) directLineTimeToMark = 99999;
 				//use target VMG calculation for laylines-to-mark
-				TargetxMG tvmg = BoatPolar->Calc_TargetVMG(directLineTWA, tws_kts); // directLineTWA <= 90° --> upwind, >90 --> downwind
+				TargetxMG tvmg = g_BoatPolar->Calc_TargetVMG(directLineTWA, tws_kts); // directLineTWA <= 90° --> upwind, >90 --> downwind
 				//optional : use target CMG calculation for laylines-to-mark
-				//TargetxMG tvmg = BoatPolar->Calc_TargetCMG(mTWS,mTWD,CTM); // directLineTWA <= 90° --> upwind, >90 --> downwind
+				//TargetxMG tvmg = g_BoatPolar->Calc_TargetCMG(mTWS,mTWD,CTM); // directLineTWA <= 90° --> upwind, >90 --> downwind
 				double sigCTM_TWA = getSignedDegRange(CTM, mTWD);
 				double cur_tacklinedir=0, target_tacklinedir=0;
 				if (!wxIsNaN(tvmg.TargetAngle))
@@ -1677,13 +1677,13 @@ void tactics_pi::DrawPolar(PlugIn_ViewPort *vp, wxPoint pp, double PolarAngle)
 		double rotate = vp->rotation;
 		int i;
 		if (mTWS > 0){
-			TargetxMG vmg_up = BoatPolar->GetTargetVMGUpwind(mTWS);
-			TargetxMG vmg_dn = BoatPolar->GetTargetVMGDownwind(mTWS);
+			TargetxMG vmg_up = g_BoatPolar->GetTargetVMGUpwind(mTWS);
+			TargetxMG vmg_dn = g_BoatPolar->GetTargetVMGDownwind(mTWS);
 			TargetxMG CmGMax, CmGMin;
-			BoatPolar->Calc_TargetCMG2(mTWS, mTWD, mBRG, &CmGMax, &CmGMin);  //CmGMax = the higher value, CmGMin the lower cmg value
+			g_BoatPolar->Calc_TargetCMG2(mTWS, mTWD, mBRG, &CmGMax, &CmGMin);  //CmGMax = the higher value, CmGMin the lower cmg value
 
 			for (i = 0; i < STEPS / 2; i++){ //0...179
-				polval[i] = BoatPolar->GetPolarSpeed(i * 2 + 1, mTWS); //polar data is 1...180 !!! i*2 : draw in 2° steps
+				polval[i] = g_BoatPolar->GetPolarSpeed(i * 2 + 1, mTWS); //polar data is 1...180 !!! i*2 : draw in 2° steps
 				polval[STEPS - 1 - i] = polval[i];
 				//if (wxIsNaN(polval[i])) polval[i] = polval[STEPS-1 - i] = 0.0;
 				if (polval[i]>max) max = polval[i];
@@ -1717,21 +1717,21 @@ void tactics_pi::DrawPolar(PlugIn_ViewPort *vp, wxPoint pp, double PolarAngle)
 			glEnd();
 			//draw Target-VMG Angles now
 			if (!wxIsNaN(vmg_up.TargetAngle)){
-				rad = 81 * BoatPolar->GetPolarSpeed(vmg_up.TargetAngle, mTWS) / max;
+				rad = 81 * g_BoatPolar->GetPolarSpeed(vmg_up.TargetAngle, mTWS) / max;
 				DrawTargetAngle(vp, pp, PolarAngle + vmg_up.TargetAngle, _T("BLUE3"), 1, rad);
 				DrawTargetAngle(vp, pp, PolarAngle - vmg_up.TargetAngle, _T("BLUE3"), 1, rad);
 			}
 			if (!wxIsNaN(vmg_dn.TargetAngle)){
-				rad = 81 * BoatPolar->GetPolarSpeed(vmg_dn.TargetAngle, mTWS) / max;
+				rad = 81 * g_BoatPolar->GetPolarSpeed(vmg_dn.TargetAngle, mTWS) / max;
 				DrawTargetAngle(vp, pp, PolarAngle + vmg_dn.TargetAngle, _T("BLUE3"), 1, rad);
 				DrawTargetAngle(vp, pp, PolarAngle - vmg_dn.TargetAngle, _T("BLUE3"), 1, rad);
 			}
 			if (!wxIsNaN(CmGMax.TargetAngle)){
-				rad = 81 * BoatPolar->GetPolarSpeed(CmGMax.TargetAngle, mTWS) / max;
+				rad = 81 * g_BoatPolar->GetPolarSpeed(CmGMax.TargetAngle, mTWS) / max;
 				DrawTargetAngle(vp, pp, PolarAngle + CmGMax.TargetAngle, _T("URED"), 2, rad);
 			}
 			if (!wxIsNaN(CmGMin.TargetAngle)){
-				rad = 81 * BoatPolar->GetPolarSpeed(CmGMin.TargetAngle, mTWS) / max;
+				rad = 81 * g_BoatPolar->GetPolarSpeed(CmGMin.TargetAngle, mTWS) / max;
 				DrawTargetAngle(vp, pp, PolarAngle + CmGMin.TargetAngle, _T("URED"), 1, rad);
 			}
 			//Hdt line
@@ -2772,6 +2772,7 @@ void tactics_pi::ShowPreferencesDialog(wxWindow* parent)
 		SetToolbarItemState(m_toolbar_item_id, GetTacticsWindowShownCount() != 0);
 	} */
 	dialog->Destroy();
+    delete dialog;
 }
 
 void tactics_pi::SetColorScheme(PI_ColorScheme cs)
@@ -3917,7 +3918,7 @@ void TacticsPreferencesDialog::SelectPolarFile(wxCommandEvent& event)
 	wxFileDialog fdlg(GetOCPNCanvasWindow(), _("Select a Polar-File"), _T(""));
 	if (fdlg.ShowModal() == wxID_CANCEL) return;
 	g_path_to_PolarFile = fdlg.GetPath();
-	BoatPolar->loadPolar(g_path_to_PolarFile);
+	g_BoatPolar->loadPolar(g_path_to_PolarFile);
 	if (m_pTextCtrlPolar)  m_pTextCtrlPolar->SetValue(g_path_to_PolarFile);
 	wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
 	if (pConf) {
@@ -5110,17 +5111,17 @@ void tactics_pi::CalculatePerformanceData(void)
 		return;
 	}
 
-	mPolarTargetSpeed = BoatPolar->GetPolarSpeed(mTWA, mTWS);
+	mPolarTargetSpeed = g_BoatPolar->GetPolarSpeed(mTWA, mTWS);
 	//transfer targetangle dependent on AWA, not TWA
 	if (mAWA <= 90)
-		tvmg = BoatPolar->Calc_TargetVMG(60, mTWS);
+		tvmg = g_BoatPolar->Calc_TargetVMG(60, mTWS);
 	else
-		tvmg = BoatPolar->Calc_TargetVMG(120, mTWS);
+		tvmg = g_BoatPolar->Calc_TargetVMG(120, mTWS);
 
 	// get Target VMG Angle from Polar
-	//tvmg = BoatPolar->Calc_TargetVMG(mTWA, mTWS);
+	//tvmg = g_BoatPolar->Calc_TargetVMG(mTWA, mTWS);
     if (tvmg.TargetSpeed > 0 && !wxIsNaN(mStW)) {
-		double VMG = BoatPolar->Calc_VMG(mTWA, mStW);
+		double VMG = g_BoatPolar->Calc_VMG(mTWA, mStW);
 		mPercentTargetVMGupwind = mPercentTargetVMGdownwind = 0;
 		if (mTWA < 90){
 			mPercentTargetVMGupwind = fabs(VMG / tvmg.TargetSpeed * 100.);
@@ -5143,8 +5144,8 @@ void tactics_pi::CalculatePerformanceData(void)
 		mVMGoptAngle = 0;
 
     if (mBRG >= 0 && !wxIsNaN(mHdt) && !wxIsNaN(mStW) && !wxIsNaN(mTWD)){
-		tcmg = BoatPolar->Calc_TargetCMG(mTWS, mTWD, mBRG);
-		double actcmg = BoatPolar->Calc_CMG(mHdt, mStW, mBRG);
+		tcmg = g_BoatPolar->Calc_TargetCMG(mTWS, mTWD, mBRG);
+		double actcmg = g_BoatPolar->Calc_CMG(mHdt, mStW, mBRG);
 		// mCMGGain = (tcmg.TargetSpeed >0) ? (100.0 - mStW / tcmg.TargetSpeed *100.) : 0.0;
 		mCMGGain = (tcmg.TargetSpeed >0) ? (100.0 - actcmg / tcmg.TargetSpeed *100.) : 0.0;
 		if (tcmg.TargetAngle >= 0 && tcmg.TargetAngle < 360) {

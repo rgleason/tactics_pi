@@ -299,7 +299,7 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 	m_scrolledWindowAppearance->SetSizer( fgSizer10 );
 	m_scrolledWindowAppearance->Layout();
 	fgSizer10->Fit( m_scrolledWindowAppearance );
-	m_notebookPreferences->AddPage( m_scrolledWindowAppearance, _("Appearance"), true );
+	m_notebookPreferences->AddPage( m_scrolledWindowAppearance, _("Appearance"), false );
 	m_scrolledWindowPerformanceParameters = new wxScrolledWindow( m_notebookPreferences, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxALWAYS_SHOW_SB|wxTAB_TRAVERSAL|wxVSCROLL );
 	m_scrolledWindowPerformanceParameters->SetScrollRate( 5, 5 );
 	wxFlexGridSizer* fgSizer14;
@@ -666,7 +666,7 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 	m_staticText49->Wrap( -1 );
 	fgSizer22->Add( m_staticText49, 0, wxALIGN_CENTER_VERTICAL|wxALL, 2 );
 
-	m_filePickerPolar = new wxFilePickerCtrl( sbSizer10->GetStaticBox(), wxID_ANY, wxT("/data/public/working area/opencpn/tactics_pi/Forms/TacticsPreferencesDialogDef.cpp"), _("Select a file"), _("*.*"), wxDefaultPosition, wxDefaultSize, wxFLP_OPEN );
+	m_filePickerPolar = new wxFilePickerCtrl( sbSizer10->GetStaticBox(), wxID_ANY, wxT("/data/public/working area/opencpn/tactics_pi/Forms/TacticsPreferencesDialogDef.cpp"), _("Select a file"), _("*.*"), wxDefaultPosition, wxDefaultSize, wxFLP_OPEN|wxFLP_USE_TEXTCTRL );
 	fgSizer22->Add( m_filePickerPolar, 0, wxALL|wxEXPAND, 5 );
 
 	m_buttonLoadPolar = new wxButton( sbSizer10->GetStaticBox(), wxID_ANY, _("Load"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -734,7 +734,7 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 	m_scrolledWindowPerformanceParameters->SetSizer( fgSizer14 );
 	m_scrolledWindowPerformanceParameters->Layout();
 	fgSizer14->Fit( m_scrolledWindowPerformanceParameters );
-	m_notebookPreferences->AddPage( m_scrolledWindowPerformanceParameters, _("Performance Parameters"), false );
+	m_notebookPreferences->AddPage( m_scrolledWindowPerformanceParameters, _("Performance Parameters"), true );
 	m_panelAbout = new wxPanel( m_notebookPreferences, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer2;
 	bSizer2 = new wxBoxSizer( wxVERTICAL );
@@ -901,6 +901,7 @@ TacticsPreferencesDialogDef::TacticsPreferencesDialogDef( wxWindow* parent, wxWi
 	m_fontPickerSmall->Connect( wxEVT_COMMAND_FONTPICKER_CHANGED, wxFontPickerEventHandler( TacticsPreferencesDialogDef::OnFontChanged ), NULL, this );
 	m_radioBtnFixedLeeway->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TacticsPreferencesDialogDef::OnManualHeelUpdate ), NULL, this );
 	m_radioBtnHeelnput->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TacticsPreferencesDialogDef::OnManualHeelUpdate ), NULL, this );
+	m_buttonLoadPolar->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TacticsPreferencesDialogDef::OnClickLoadPolar ), NULL, this );
 	m_sdbSizer1Apply->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TacticsPreferencesDialogDef::OnApplyButtonClick ), NULL, this );
 	m_sdbSizer1Cancel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TacticsPreferencesDialogDef::OnCancelButtonClick ), NULL, this );
 	m_sdbSizer1OK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TacticsPreferencesDialogDef::OnOKButtonClick ), NULL, this );
@@ -925,6 +926,7 @@ TacticsPreferencesDialogDef::~TacticsPreferencesDialogDef()
 	m_fontPickerSmall->Disconnect( wxEVT_COMMAND_FONTPICKER_CHANGED, wxFontPickerEventHandler( TacticsPreferencesDialogDef::OnFontChanged ), NULL, this );
 	m_radioBtnFixedLeeway->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TacticsPreferencesDialogDef::OnManualHeelUpdate ), NULL, this );
 	m_radioBtnHeelnput->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TacticsPreferencesDialogDef::OnManualHeelUpdate ), NULL, this );
+	m_buttonLoadPolar->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TacticsPreferencesDialogDef::OnClickLoadPolar ), NULL, this );
 	m_sdbSizer1Apply->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TacticsPreferencesDialogDef::OnApplyButtonClick ), NULL, this );
 	m_sdbSizer1Cancel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TacticsPreferencesDialogDef::OnCancelButtonClick ), NULL, this );
 	m_sdbSizer1OK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TacticsPreferencesDialogDef::OnOKButtonClick ), NULL, this );
