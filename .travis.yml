@@ -8,21 +8,21 @@ matrix:
       dist: xenial
       compiler: gcc
       script:
-        - ./ci/travis-build-debian.sh
+        - sh ./ci/travis-build-debian.sh
 
     - env:
         - OCPN_TARGET=trusty
       dist: trusty
       compiler: gcc
       script:
-        - ./ci/travis-build-debian.sh
+        - sh ./ci/travis-build-debian.sh
 
     - env:
         - OCPN_TARGET=osx
       os: osx
       compiler: clang
       script:
-        - ./ci/travis-build-osx.sh
+        - sh ./ci/travis-build-osx.sh
 
 install:
 
