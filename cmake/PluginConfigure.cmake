@@ -147,7 +147,7 @@ IF(MSVC)
 ENDIF(MSVC)
 
 IF(NOT DEFINED wxWidgets_USE_FILE)
-  SET(wxWidgets_USE_LIBS base core net xml html adv aui)
+  SET(wxWidgets_FIND_COMPONENTS base core net xml html adv aui)
 ENDIF(NOT DEFINED wxWidgets_USE_FILE)
 
 
@@ -202,7 +202,7 @@ ENDIF(OCPN_USE_SVG)
 FIND_PACKAGE(OpenGL)
 IF(OPENGL_GLU_FOUND)
 
-    SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl)
+    SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl)
     INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
 
     MESSAGE (STATUS "Found OpenGL..." )
@@ -244,7 +244,7 @@ IF (NOT QT_ANDROID )
     if(WXWIDGETS_FORCE_VERSION)
         set (wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
     endif()
-    FIND_PACKAGE(wxWidgets REQUIRED)
+    FIND_PACKAGE(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS} REQUIRED)
     INCLUDE(${wxWidgets_USE_FILE})
 ENDIF (NOT QT_ANDROID )
 
