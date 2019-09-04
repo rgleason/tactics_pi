@@ -3,10 +3,26 @@ language: cpp
 
 matrix:
   include:
-    - dist: trusty
+    - env:
+        - OCPN_TARGET=xenial
+      dist: xenial
       compiler: gcc
-    - os: osx
+      script:
+        - ./ci/travis-build-debian.sh
+
+    - env:
+        - OCPN_TARGET=trusty
+      dist: trusty
+      compiler: gcc
+      script:
+        - ./ci/travis-build-debian.sh
+
+    - env:
+        - OCPN_TARGET=osx
+      os: osx
       compiler: clang
+      script:
+        - ./ci/travis-build-osx.sh
 
 install:
 
