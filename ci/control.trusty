@@ -1,4 +1,4 @@
-Source: opencpn
+Source: opencpn-pluging-tactics
 Build-Depends: debhelper (>= 9),
  cmake,
  libarchive-dev,
@@ -18,11 +18,12 @@ Build-Depends: debhelper (>= 9),
  libwxgtk3.0-dev,
  libwxgtk3.0-0v5 | libwxgtk3.0-0,
  libwxsvg-dev | base-files,
- portaudio19-dev
+ portaudio19-dev,
+ rpm
 Standards-Version: 4.3.0
 Homepage: https://opencpn.org
 
-Description: Packages needed to build opencpn on debian.
+Description: Packages needed to build tactics_pi on debian.
  The Build-Depends field can be used to install dependencies
  using mk-build-deps.
  .
