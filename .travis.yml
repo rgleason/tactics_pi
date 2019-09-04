@@ -22,7 +22,7 @@ matrix:
       os: osx
       compiler: clang
       script:
-        - ./ci/travis-build-osx.sh
+        - bash ./ci/travis-build-osx.sh
 
 install:
 
