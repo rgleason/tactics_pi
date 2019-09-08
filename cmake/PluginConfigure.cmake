@@ -146,12 +146,12 @@ IF(MSVC)
     ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
 ENDIF(MSVC)
 
-IF(NOT DEFINED wxWidgets_USE_FILE)
+IF(NOT DEFINED wxWidgets_FIND_COMPONENTS)
   SET(wxWidgets_FIND_COMPONENTS base core net xml html adv aui)
-ENDIF(NOT DEFINED wxWidgets_USE_FILE)
+ENDIF(NOT DEFINED wxWidgets_FIND_COMPONENTS)
 
 
-#  QT_ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and wxWidgets_USE_FILE is not useful.
+#  QT_ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and wxWidgets_FIND_COMPONENTS is not useful.
 #  We add the dependencies manually.
 IF(QT_ANDROID)
   ADD_DEFINITIONS(-D__WXQT__)
@@ -245,7 +245,7 @@ IF (NOT QT_ANDROID )
         set (wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
     endif()
     FIND_PACKAGE(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS} REQUIRED)
-    INCLUDE(${wxWidgets_USE_FILE})
+    INCLUDE(${wxWidgets_FIND_COMPONENTS})
 ENDIF (NOT QT_ANDROID )
 
 # On Android, PlugIns need a specific linkage set....
