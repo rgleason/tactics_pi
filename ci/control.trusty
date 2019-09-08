@@ -1,4 +1,4 @@
-Source: opencpn-pluging-tactics
+Source: opencpn-plugin-tactics
 Build-Depends: debhelper (>= 9),
  cmake,
  libarchive-dev,
