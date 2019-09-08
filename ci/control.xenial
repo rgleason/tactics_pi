@@ -29,4 +29,4 @@ Description: Packages needed to build tactics_pi on debian.
  The Build-Depends field can be used to install dependencies
  using mk-build-deps.
  .
- These packages are available in trusty+.
+ These packages are available in xenial+.
