@@ -4,8 +4,6 @@
 ## License:     GPLv3+
 ##---------------------------------------------------------------------------
 
-IF(NOT QT_ANDROID)
-
 # build a CPack driven installer package
 #include (InstallRequiredSystemLibraries)
 
@@ -39,10 +37,21 @@ IF(WIN32)
 
 #  These lines set the name of the Windows Start Menu shortcut and the icon that goes with it
 #  SET(CPACK_NSIS_INSTALLED_ICON_NAME "${PACKAGE_NAME}")
-SET(CPACK_NSIS_DISPLAY_NAME "OpenCPN ${PACKAGE_NAME}")
+  SET(CPACK_NSIS_DISPLAY_NAME "OpenCPN ${PACKAGE_NAME}")
+
+  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_FILE_NAME}_${CPACK_PACKAGE_VERSION}_win32" )
 
   SET(CPACK_NSIS_DIR "${PROJECT_SOURCE_DIR}/buildwin/NSIS_Unicode")  #Gunther
   SET(CPACK_BUILDWIN_DIR "${PROJECT_SOURCE_DIR}/buildwin")  #Gunther
+
+  MESSAGE(STATUS "FILE: ${CPACK_PACKAGE_FILE_NAME}")
+  add_custom_command(OUTPUT ${CPACK_PACKAGE_FILE_NAME}
+	  COMMAND signtool sign /v /f \\cert\\OpenCPNSPC.pfx /d http://www.opencpn.org /t http://timestamp.verisign.com/scripts/timstamp.dll ${CPACK_PACKAGE_FILE_NAME}
+	  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	  DEPENDS ${PACKAGE_NAME}
+	  COMMENT "Code-Signing: ${CPACK_PACKAGE_FILE_NAME}")
+  ADD_CUSTOM_TARGET(codesign COMMENT "code signing: Done."
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME} )
 
 ELSE(WIN32)
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${PACKAGE_NAME})
@@ -69,6 +78,8 @@ set(CPACK_SOURCE_IGNORE_FILES
 "^${CPACK_PACKAGE_INSTALL_DIRECTORY}/*"
 )
 
+SET(PACKAGE_RELEASE ${OCPN_MIN_VERSION})
+
 IF(UNIX AND NOT APPLE)
 #    INCLUDE(UseRPMTools)
 #    IF(RPMTools_FOUND)
@@ -77,7 +88,6 @@ IF(UNIX AND NOT APPLE)
 
 # need apt-get install rpm, for rpmbuild
     SET(PACKAGE_DEPS "opencpn, bzip2, gzip")
-    SET(PACKAGE_RELEASE 1)
 
 
   IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
@@ -115,10 +125,9 @@ IF(UNIX AND NOT APPLE)
     SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PACKAGE_NAME} PlugIn for OpenCPN")
     SET(CPACK_PACKAGE_DESCRIPTION "${PACKAGE_NAME} PlugIn for OpenCPN")
     SET(CPACK_SET_DESTDIR ON)
-    SET(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
+    SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_FILE_NAME}_${PACKAGE_VERSION}-${PACKAGE_RELEASE}_${ARCH}" )
 
-    SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}_${ARCH}" )
 ENDIF(UNIX AND NOT APPLE)
 
 IF(TWIN32 AND NOT UNIX)
@@ -149,11 +158,12 @@ ENDIF(TWIN32 AND NOT UNIX)
 
 INCLUDE(CPack)
 
-IF(NOT STANDALONE MATCHES "BUNDLED")
 IF(APPLE)
   MESSAGE (STATUS "*** Staging to build PlugIn OSX Package the new way ***")
 # -- Run the BundleUtilities cmake code
   set(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
+
+  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_FILE_NAME}_${PACKAGE_VERSION}-${PACKAGE_RELEASE}" )
 
 #  set(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
   set(APPS "")
@@ -169,13 +179,13 @@ IF(APPLE)
     "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libtactics_pi.dylib"
   )
   add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.dmg
     COMMAND chmod +x ${CMAKE_SOURCE_DIR}/buildosx/create-dmg
     COMMAND
       ${CMAKE_SOURCE_DIR}/buildosx/create-dmg 
       --volname "ocpn_draw_pi Installer" 
       --background ${CMAKE_SOURCE_DIR}/buildosx/background.png
-        ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
+        ${CMAKE_CURRENT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.dmg
         ${CMAKE_INSTALL_PREFIX}/bin/
     DEPENDS ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libtactics_pi.dylib
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -184,7 +194,7 @@ IF(APPLE)
   add_custom_target(
     create-dmg
     COMMENT "create-dmg: Done."
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.dmg
   )
 
   MESSAGE (STATUS "*** Staging to build PlugIn OSX Package the old way ***")
@@ -210,18 +220,3 @@ IF(APPLE)
 
 ENDIF(APPLE)
 
-IF(WIN32)
-  SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}_win32.exe" )
-  MESSAGE(STATUS "FILE: ${CPACK_PACKAGE_FILE_NAME}")
-  add_custom_command(OUTPUT ${CPACK_PACKAGE_FILE_NAME}
-	  COMMAND signtool sign /v /f \\cert\\OpenCPNSPC.pfx /d http://www.opencpn.org /t http://timestamp.verisign.com/scripts/timstamp.dll ${CPACK_PACKAGE_FILE_NAME}
-	  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-	  DEPENDS ${PACKAGE_NAME}
-	  COMMENT "Code-Signing: ${CPACK_PACKAGE_FILE_NAME}")
-  ADD_CUSTOM_TARGET(codesign COMMENT "code signing: Done."
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME} )
-
-ENDIF(WIN32)
-ENDIF(NOT STANDALONE MATCHES "BUNDLED")
-
-ENDIF(NOT QT_ANDROID)
