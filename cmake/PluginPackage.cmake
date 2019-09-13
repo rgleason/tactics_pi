@@ -178,6 +178,7 @@ IF(APPLE)
     LIBS
     "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libtactics_pi.dylib"
   )
+  MESSAGE(STATUS "osX package: ${CPACK_PACKAGE_FILE_NAME}")
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.dmg
     COMMAND chmod +x ${CMAKE_SOURCE_DIR}/buildosx/create-dmg
@@ -189,7 +190,7 @@ IF(APPLE)
         ${CMAKE_INSTALL_PREFIX}/bin/
     DEPENDS ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libtactics_pi.dylib
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMENT "create-dmg [${PACKAGE_NAME}]: Generated dmg file."
+    COMMENT "create-dmg [${CPACK_PACKAGE_FILE_NAME}]: Generated dmg file."
   )
   add_custom_target(
     create-dmg
