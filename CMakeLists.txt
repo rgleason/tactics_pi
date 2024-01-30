@@ -18,7 +18,7 @@
 ## *   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,                                       *
 ## *   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                                       *
 #-----------------------------------------------------------------------------
-# Frontend2 Author: Jon Gough 
+# Frontend2 Author: Jon Gough
 # Testplugin(TP) v1.0.286.2 24/12/2023 DD/MM/YYYY format
 # buildCI:yes useODAPI:no validateJSON:no
 # ---------------------------------------------------------------------------
@@ -56,7 +56,7 @@ set(LONG_DESCRIPTION "Tactics PlugIn for OpenCPN Provides performance data and i
 set(VERSION_MAJOR "1")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "81")
-set(VERSION_TWEAK "0")
+set(VERSION_TWEAK "1")
 set(VERSION_DATE  "27/12/2023")#DD/MM/YYYY format
 set(OCPN_MIN_VERSION "ov58")
 
@@ -141,11 +141,11 @@ add_definitions(-DUSE_S57)
 SET(SRCS
     src/tactics_pi.h
     src/tactics_pi.cpp
-	src/avg_wind.h
-	src/avg_wind.cpp
+    src/avg_wind.h
+    src/avg_wind.cpp
     src/bearingcompass.cpp
     src/bearingcompass.h
-	src/polarcompass.cpp
+    src/polarcompass.cpp
     src/polarcompass.h
     src/performance.cpp
     src/performance.h
@@ -212,8 +212,8 @@ target_sources(${PACKAGE_NAME} PUBLIC ${SRC} )
 ##==============================================================
 
 if(NOT OCPN_FLATPAK_CONFIG)
-    # Build environment not available when flatpak is being configured 
-	# so following statements will not work
+    # Build environment not available when flatpak is being configured
+    # so following statements will not work
     message(STATUS "${CMLOC}Adding target link libraries to ${PACKAGE_NAME}")
 
     if(WIN32)
