@@ -1693,11 +1693,10 @@ void tactics_pi::DoRenderLaylineGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort
 
         double lat3A, lon3A, lat3B, lon3B;
 
-        GCIntersectSegment(pc_end.y, pc_end.x, pc_end2.y, pc_end2.x, pm_end.y,
+        bool goAhead = GCIntersectSegment(pc_end.y, pc_end.x, pc_end2.y, pc_end2.x, pm_end.y,
           pm_end.x, pm_end2.y, pm_end2.x, lat3A, lon3A, lat3B,
           lon3B);
 
-        bool goAhead = true; // Assume we can make an intersection
         pIntersection_pos.y = lat3A;
         pIntersection_pos.x = lon3A;
 
