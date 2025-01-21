@@ -446,7 +446,7 @@ wxString GetUUID(void)
 //---------------------------------------------------------------------------------------------------------
 
 tactics_pi::tactics_pi(void *ppimgr) :
-wxTimer(this), opencpn_plugin_117(ppimgr)
+wxTimer(this), opencpn_plugin_118(ppimgr)
 {
     // Create the PlugIn icons
     initialize_images();
