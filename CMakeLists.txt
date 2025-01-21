@@ -58,9 +58,9 @@ set(LONG_DESCRIPTION
 
 set(VERSION_MAJOR "1")
 set(VERSION_MINOR "0")
-set(VERSION_PATCH "85")
+set(VERSION_PATCH "86")
 set(VERSION_TWEAK "0")
-set(VERSION_DATE  "21/01/2025)#DD/MM/YYYY format
+set(VERSION_DATE  "21/01/2025")#DD/MM/YYYY format
 set(OCPN_MIN_VERSION "ov58")
 
 set(OCPN_API_VERSION_MAJOR "1")
@@ -82,7 +82,7 @@ set(ALPHA "alpha") #Standard Repos
 # Set if  Cloudsmith Base Repository name does not match your Git Repository name.
 #set(CLOUDSMITH_BASE_REPOSITORY "${GIT_REPOSITORY_NAME}")
 #set(CLOUDSMITH_BASE_REPOSITORY "opencpn-plugins")  #Ricks's customization
-set(CLOUDSMITH_BASE_REPOSITORY "tactics") #without the pi
+set(CLOUDSMITH_BASE_REPOSITORY "tactics") # without the pi
 
 # Set the following to use OpenCPN cloudsmith repositories instead of own repositories
 set(CLOUDSMITH_USER "opencpn")
@@ -214,18 +214,19 @@ SET(SRC ${SRCS} ${HDRS} )
 ##=============================================================
 
 
+
 ## Change target_sources to match your project needs.
 ##==============================================================
 
-target_sources(${PACKAGE_NAME} PUBLIC ${SRC} )
+target_sources(${PACKAGE_NAME} PUBLIC ${SRC})
 
+## Change target_sources to match your project needs.
 ##==============================================================
 
 if (NOT OCPN_FLATPAK_CONFIG)
   # Build environment not available when flatpak is being configured so
   # following statements will not work
   message(STATUS "${CMLOC}Adding target link libraries to ${PACKAGE_NAME}")
-
 
   if (WIN32)
     add_subdirectory(opencpn-libs/WindowsHeaders)
