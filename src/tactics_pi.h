@@ -128,6 +128,11 @@ public:
 
 //    The required PlugIn Methods
       int Init(void);
+
+      //This method is called when OpenCPN is fully initialized.
+      //only after this we may do route/waypoints search.
+      void LateInit(void);  // If WANTS_LATE_INIT is returned by Init()
+
       bool DeInit(void);
 
       void Notify();
@@ -201,6 +206,9 @@ private:
       void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
       void SendUtcTimeToAllInstruments( wxDateTime value );
       void OnAvgWindUpdTimer(wxTimerEvent & event);
+
+      bool m_RenderEnabled;
+
       wxTimer m_avgWindUpdTimer;
       static const char    *s_common_name;
       wxFileConfig         *m_pconfig;

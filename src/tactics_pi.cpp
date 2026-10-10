@@ -446,7 +446,7 @@ wxString GetUUID(void)
 //---------------------------------------------------------------------------------------------------------
 
 tactics_pi::tactics_pi(void *ppimgr) :
-wxTimer(this), opencpn_plugin_118(ppimgr)
+wxTimer(this), opencpn_plugin_118(ppimgr), m_RenderEnabled(false)
 {
     // Create the PlugIn icons
     initialize_images();
@@ -625,9 +625,7 @@ int tactics_pi::Init(void)
     m_toolbar_item_id = InsertPlugInToolSVG(_T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
         _("Tactics"), _T(""), NULL, TACTICS_TOOL_POSITION, 0, this);
 
-
     ApplyConfig();
-
     //  If we loaded a version 1 config setup, convert now to version 2
     if (m_config_version == 1) {
         SaveConfig();
@@ -656,9 +654,20 @@ int tactics_pi::Init(void)
         USES_AUI_MANAGER |
         WANTS_PLUGIN_MESSAGING |
         WANTS_OPENGL_OVERLAY_CALLBACK |
-        WANTS_OVERLAY_CALLBACK
+        WANTS_OVERLAY_CALLBACK |
+        WANTS_LATE_INIT
         );
 }
+
+// If WANTS_LATE_INIT is returned by Init()
+void tactics_pi::LateInit(void)
+{
+    //Enable overlays (laylines and Current) rendering.
+    //The same flag allows handling NMEA sentensies which cause renedering of 
+    //some instruments which also depends on availability of route/waypoint manager
+    m_RenderEnabled = true;
+}
+
 void tactics_pi::OnAvgWindUpdTimer(wxTimerEvent & event)
 {
   if (!wxIsNaN(mTWD))
@@ -930,7 +939,8 @@ Called by Plugin Manager on main system process cycle
 bool tactics_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 {
     b_tactics_dc_message_shown = false; // show message box if RenderOverlay() is called again
-    if (m_bLaylinesIsVisible || m_bDisplayCurrentOnChart || m_bShowWindbarbOnChart || m_bShowPolarOnChart){
+    if (m_RenderEnabled && 
+        (m_bLaylinesIsVisible || m_bDisplayCurrentOnChart || m_bShowWindbarbOnChart || m_bShowPolarOnChart)){
         glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT | GL_POLYGON_BIT | GL_HINT_BIT);
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
@@ -2234,6 +2244,11 @@ void tactics_pi::SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4])
 
 void tactics_pi::SetNMEASentence(wxString &sentence)
 {
+    // Don't process NMEA data until openCPN is fully initialized
+    // Visualization depends on availability route/waypoint manager
+    // and will cause null pointer error if called before plugin's LateInit() is called.
+    if (!m_RenderEnabled) return;
+
     m_NMEA0183 << sentence;
     if (m_NMEA0183.PreParse()) {
         if (m_NMEA0183.LastSentenceIDReceived == _T("DBT")) {
