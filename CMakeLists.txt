@@ -58,7 +58,7 @@ set(LONG_DESCRIPTION
 
 set(VERSION_MAJOR "1")
 set(VERSION_MINOR "0")
-set(VERSION_PATCH "92")
+set(VERSION_PATCH "93")
 set(VERSION_TWEAK "0")
 set(VERSION_DATE  "11/10/2026")#DD/MM/YYYY format
 set(OCPN_MIN_VERSION "ov58")
@@ -107,7 +107,7 @@ message(STATUS "${CMLOC}USE_GL: ${USE_GL}")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE
-      "Release"
+      "RelwithDebInfo"
       CACHE STRING "Choose the type of build" FORCE
   )
 endif ("${CMAKE_BUILD_TYPE}" STREQUAL "")
