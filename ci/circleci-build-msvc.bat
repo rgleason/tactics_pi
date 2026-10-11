@@ -67,7 +67,7 @@ git clone https://github.com/microsoft/vcpkg "%VCPKG_ROOT%"
 call "%VCPKG_ROOT%\bootstrap-vcpkg.bat"
 
 echo Install gettext
-"%VCPKG_ROOT%\vcpkg" install gettext:x86-windows
+"%VCPKG_ROOT%\vcpkg" install gettext:x64-windows
 echo Gettext installed.
 
 echo Create build environment
@@ -78,8 +78,8 @@ if "%MSVC_VERSION%"=="2019" (
     -DCMAKE_BUILD_TYPE=%CONFIGURATION% ^
     -DwxWidgets_LIB_DIR=%wxWidgets_LIB_DIR% ^
     -DwxWidgets_ROOT_DIR=%wxWidgets_ROOT_DIR% ^
-    -DGETTEXT_MSGMERGE_EXECUTABLE=%VCPKG_ROOT%/installed/x86-windows/tools/gettext/msgmerge.exe ^
-    -DGETTEXT_MSGFMT_EXECUTABLE=%VCPKG_ROOT%/installed/x86-windows/tools/gettext/msgfmt.exe ^
+	-DGETTEXT_MSGMERGE_EXECUTABLE=%VCPKG_ROOT%/installed/x64-windows/tools/gettext/msgmerge.exe ^
+	-DGETTEXT_MSGFMT_EXECUTABLE=%VCPKG_ROOT%/installed/x64-windows/tools/gettext/msgfmt.exe ^
     ..
 ) else (
   cmake -A Win32 -G "Visual Studio 17 2022" ^
@@ -87,8 +87,8 @@ if "%MSVC_VERSION%"=="2019" (
     -DCMAKE_BUILD_TYPE=%CONFIGURATION% ^
     -DwxWidgets_LIB_DIR=%wxWidgets_LIB_DIR% ^
     -DwxWidgets_ROOT_DIR=%wxWidgets_ROOT_DIR% ^
-    -DGETTEXT_MSGMERGE_EXECUTABLE=%VCPKG_ROOT%/installed/x86-windows/tools/gettext/msgmerge.exe ^
-    -DGETTEXT_MSGFMT_EXECUTABLE=%VCPKG_ROOT%/installed/x86-windows/tools/gettext/msgfmt.exe ^
+	-DGETTEXT_MSGMERGE_EXECUTABLE=%VCPKG_ROOT%/installed/x64-windows/tools/gettext/msgmerge.exe ^
+	-DGETTEXT_MSGFMT_EXECUTABLE=%VCPKG_ROOT%/installed/x64-windows/tools/gettext/msgfmt.exe ^
     ..
 )
 
