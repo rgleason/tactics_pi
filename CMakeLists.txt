@@ -273,25 +273,6 @@ if (QT_ANDROID)
 endif (QT_ANDROID)
 
 
-# --- MSVC fixes: normalize gettext paths and ensure DLL output directory ---
-
-if (WIN32 AND NOT OCPN_FLATPAK_CONFIG)
-    # Normalize gettext tool paths for MSVC
-    if (DEFINED VCPKG_ROOT)
-        file(TO_NATIVE_PATH "${VCPKG_ROOT}/installed/x86-windows/tools/gettext/msgmerge.exe" GETTEXT_MSGMERGE_EXECUTABLE)
-        file(TO_NATIVE_PATH "${VCPKG_ROOT}/installed/x86-windows/tools/gettext/msgfmt.exe" GETTEXT_MSGFMT_EXECUTABLE)
-
-        set(GETTEXT_MSGMERGE_EXECUTABLE "${GETTEXT_MSGMERGE_EXECUTABLE}" CACHE FILEPATH "msgmerge.exe")
-        set(GETTEXT_MSGFMT_EXECUTABLE "${GETTEXT_MSGFMT_EXECUTABLE}" CACHE FILEPATH "msgfmt.exe")
-    endif()
-
-    # Ensure MSVC places the DLL in the correct configuration directory
-    set_target_properties(${PACKAGE_NAME} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}
-    )
-endif()
-
-
 
 ## Needed for all builds Do not change - needed to build app -------------##
 ##===============================================================
