@@ -387,7 +387,7 @@ jobs:
 ## KEEP needed for OpenCPN v5.8 Jammy wx32 build
     build-ubuntu-x86_64-2204-jammy:
         docker:
-        - image: cimg/base:stable-22.04
+        - image: cimg/base:edge-22.04
         environment:
         - BUILD_GTK3: true
         - OCPN_TARGET: jammy
