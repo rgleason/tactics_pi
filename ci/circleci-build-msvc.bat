@@ -100,7 +100,11 @@ cmake --build . --config %CONFIGURATION%
 rem Install into staging directory for CPack
 cmake --build . --target INSTALL --config %CONFIGURATION%
 
-rem Run CPack to generate the plugin package
-cpack -G TGZ
+rem Run CPack through the PACKAGE target (recommended for MSVC)
+cmake --build . --target PACKAGE --config %CONFIGURATION%
+
+rem If you still want direct CPack invocation:
+cpack -G TGZ -C %CONFIGURATION%
+
 
 endlocal
