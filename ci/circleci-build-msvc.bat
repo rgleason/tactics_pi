@@ -101,6 +101,6 @@ rem Install into staging directory for CPack
 cmake --build . --target INSTALL --config %CONFIGURATION%
 
 rem Run CPack to generate the plugin package
-cpack -G TGZ
+cpack -G TGZ -C %CONFIGURATION%
 
 endlocal
