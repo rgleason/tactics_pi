@@ -104,7 +104,7 @@ rem Install into staging directory for CPack
 cmake --build . --target INSTALL --config %CONFIGURATION%
 
 rem Run CPack through the PACKAGE target (recommended for MSVC)
-cmake --build . --target PACKAGE --config %CONFIGURATION%
+rem cmake --build . --target PACKAGE --config %CONFIGURATION%
 
 rem If you still want direct CPack invocation:
 cpack -G TGZ -C %CONFIGURATION%
