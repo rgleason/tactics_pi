@@ -151,7 +151,7 @@ macro (GETTEXT_BUILD_MO)
   endforeach (_poFile)
 endmacro (GETTEXT_BUILD_MO)
 
-if (GETTEXT_MSGFMT_EXECUTABLE)
+if (MSGFMT_EXECUTABLE)
   file(GLOB PACKAGE_PO_FILES po/*.po)
   gettext_build_mo(${PACKAGE_PO_FILES})
   add_custom_target(
@@ -160,6 +160,6 @@ if (GETTEXT_MSGFMT_EXECUTABLE)
     DEPENDS ${_gmoFiles}
   )
   add_dependencies(${PACKAGE_NAME} ${I18N_NAME}-i18n)
-endif (GETTEXT_MSGFMT_EXECUTABLE)
+endif (MSGFMT_EXECUTABLE)
 
 set(CMLOC ${SAVE_CMLOC})
