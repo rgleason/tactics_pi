@@ -5,6 +5,12 @@
 set(SAVE_CMLOC ${CMLOC})
 set(CMLOC "PluginLocalization: ")
 
+# Force absolute msgfmt path from build script (MSVC fix)
+if (DEFINED GETTEXT_MSGFMT_EXECUTABLE AND EXISTS "${GETTEXT_MSGFMT_EXECUTABLE}")
+    set(MSGFMT_EXECUTABLE "${GETTEXT_MSGFMT_EXECUTABLE}" CACHE FILEPATH "msgfmt.exe" FORCE)
+endif ()
+
+
 if (OCPN_FLATPAK_CONFIG)
   set(CMLOC ${SAVE_CMLOC})
   return()
@@ -112,7 +118,7 @@ macro (GETTEXT_BUILD_MO)
 
     add_custom_command(
       OUTPUT ${_gmoFile}
-      COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} --check -o ${_gmoFile} ${_absFile}
+	  COMMAND ${MSGFMT_EXECUTABLE} --check -o ${_gmoFile} ${_absFile}
       COMMAND ${CMAKE_COMMAND} -E copy ${_gmoFile}
               "Resources/${_poBasename}.lproj/opencpn-${PACKAGE_NAME}.mo"
       DEPENDS ${_absFile}
