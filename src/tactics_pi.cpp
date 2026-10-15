@@ -633,11 +633,7 @@ int tactics_pi::Init(void)
         SaveConfig();
     }
     AverageWind = new AvgWind();
-    //we process data 1/s ...
-    m_avgWindUpdTimer.Start(1000, wxTIMER_CONTINUOUS);
-    m_avgWindUpdTimer.Connect(wxEVT_TIMER, wxTimerEventHandler(tactics_pi::OnAvgWindUpdTimer), NULL, this);
 
-    Start(1000, wxTIMER_CONTINUOUS);
     /* TR */
     // Context menue for making marks
     m_pmenu = new wxMenu();
@@ -656,9 +652,19 @@ int tactics_pi::Init(void)
         USES_AUI_MANAGER |
         WANTS_PLUGIN_MESSAGING |
         WANTS_OPENGL_OVERLAY_CALLBACK |
-        WANTS_OVERLAY_CALLBACK
+        WANTS_OVERLAY_CALLBACK |
+        WANTS_LATE_INIT
         );
 }
+
+void tactics_pi::LateInit(void) {
+    //we process data 1/s ...
+    m_avgWindUpdTimer.Connect(wxEVT_TIMER, wxTimerEventHandler(tactics_pi::OnAvgWindUpdTimer), NULL, this);
+    m_avgWindUpdTimer.Start(1000, wxTIMER_CONTINUOUS);
+
+    Start(1000, wxTIMER_CONTINUOUS);
+}
+
 void tactics_pi::OnAvgWindUpdTimer(wxTimerEvent & event)
 {
   if (!wxIsNaN(mTWD))
@@ -667,8 +673,10 @@ void tactics_pi::OnAvgWindUpdTimer(wxTimerEvent & event)
 bool tactics_pi::DeInit(void)
 {
     SaveConfig();
-    if (IsRunning()) // Timer started?
+    if (IsRunning()) { // Timer started?
         Stop(); // Stop timer
+        m_avgWindUpdTimer.Stop();
+    }
 
     for (size_t i = 0; i < m_ArrayOfTacticsWindow.GetCount(); i++) {
         TacticsWindow *tactics_window = m_ArrayOfTacticsWindow.Item(i)->m_pTacticsWindow;

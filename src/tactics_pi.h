@@ -147,6 +147,8 @@ public:
 	  wxBitmap m_panelBitmap; 
 
 //    The optional method overrides
+      void LateInit(void);      // Called after all core resource preparation is complete.
+
       void SetNMEASentence(wxString &sentence);
       void SetPositionFix(PlugIn_Position_Fix &pfix);
       void SetCursorLatLon(double lat, double lon);
