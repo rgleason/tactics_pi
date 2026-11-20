@@ -75,6 +75,8 @@ class Polar;
 #define TACTICS_TOOL_POSITION -1          // Request default positioning of toolbar tool
 
 #define gps_watchdog_timeout_ticks  10
+#define MS2KNOTS(r) ((r) * (1.9438444924406))
+#define KELVIN2C(r) ((r) - (273.15))
 #define CURR_RECORD_COUNT 20
 #define COGRANGE 60
 class TacticsWindowContainer
@@ -214,7 +216,27 @@ private:
       int                  m_hide_id;
 
       NMEA0183             m_NMEA0183;                 // Used to parse NMEA Sentences
+      // 0 = NMEA 2000, preferred over NMEA 0183
       short                mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT, mPriVar, mPriDateTime, mPriAWA, mPriTWA, mPriDepth;
+      short                mPriTWD, mPriSTW, mPriHeel, mPriWTP, mPriATMP, mPriMDA;
+
+      void HandleN2K_127250(ObservedEvt &ev);
+      void HandleN2K_127257(ObservedEvt &ev);
+      void HandleN2K_128259(ObservedEvt &ev);
+      void HandleN2K_128267(ObservedEvt &ev);
+      void HandleN2K_130306(ObservedEvt &ev);
+      void HandleN2K_130310(ObservedEvt &ev);
+      std::shared_ptr<ObservableListener> mN2KListener127250;
+      std::shared_ptr<ObservableListener> mN2KListener127257;
+      std::shared_ptr<ObservableListener> mN2KListener128259;
+      std::shared_ptr<ObservableListener> mN2KListener128267;
+      std::shared_ptr<ObservableListener> mN2KListener130306;
+      std::shared_ptr<ObservableListener> mN2KListener130310;
+      std::string          mN2KHDMSource, mN2KHDTSource, mN2KHeelSource, mN2KSTWSource, mN2KDepthSource, mN2KAWASource, mN2KTWASource;
+      std::string          mN2KTWDSource, mN2KWTPSource, mN2KATMPSource, mN2KMDASource;
+      int                  mN2KHDMWatchdog, mN2KHDTWatchdog, mN2KHeelWatchdog, mN2KSTWWatchdog;
+      int                  mN2KDepthWatchdog, mN2KAWAWatchdog, mN2KTWAWatchdog, mN2KTWAWaterWatchdog;
+      int                  mN2KTWDWatchdog, mN2KWTPWatchdog, mN2KATMPWatchdog, mN2KMDAWatchdog;
       double               mVar;
       // FFU
       double               mSatsInView;
