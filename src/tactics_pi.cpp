@@ -36,6 +36,7 @@
 
 #include <typeinfo>
 #include "tactics_pi.h"
+#include "N2KParser.h"
 #include "icons.h"
 #include "wx/jsonreader.h"
 #include "wx/jsonwriter.h"
@@ -58,6 +59,13 @@
 #include <wx/glcanvas.h>
 #include <wx/wfstream.h> //TR temp
 #include <wx/txtstrm.h>   //TR temp
+
+wxDEFINE_EVENT(EVT_N2K_127250, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_127257, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_128259, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_128267, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_130306, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_130310, ObservedEvt);
 
 
 wxFont *g_pFontTitle;
@@ -504,6 +512,15 @@ int tactics_pi::Init(void)
     mPriAWA = 99; // Relative wind
     mPriTWA = 99; // True wind
     mPriDepth = 99;
+    mPriTWD = 99;
+    mPriSTW = 99;
+    mPriHeel = 99;
+    mPriWTP = 99;
+    mPriATMP = 99;
+    mPriMDA = 99;
+    mN2KHDMWatchdog = mN2KHDTWatchdog = mN2KHeelWatchdog = mN2KSTWWatchdog = 0;
+    mN2KDepthWatchdog = mN2KAWAWatchdog = mN2KTWAWatchdog = mN2KTWAWaterWatchdog = 0;
+    mN2KTWDWatchdog = mN2KWTPWatchdog = mN2KATMPWatchdog = mN2KMDAWatchdog = 0;
     m_config_version = -1;
     mHDx_Watchdog = 2;
     mHDT_Watchdog = 2;
@@ -658,6 +675,37 @@ int tactics_pi::Init(void)
 }
 
 void tactics_pi::LateInit(void) {
+    // Not in Init(): instruments need OpenCPN's waypoint manager
+    // Heading   PGN 127250
+    NMEA2000Id id_127250(127250);
+    mN2KListener127250 = GetListener(id_127250, EVT_N2K_127250, this);
+    Bind(EVT_N2K_127250, &tactics_pi::HandleN2K_127250, this);
+
+    // Attitude   PGN 127257
+    NMEA2000Id id_127257(127257);
+    mN2KListener127257 = GetListener(id_127257, EVT_N2K_127257, this);
+    Bind(EVT_N2K_127257, &tactics_pi::HandleN2K_127257, this);
+
+    // Speed through water   PGN 128259
+    NMEA2000Id id_128259(128259);
+    mN2KListener128259 = GetListener(id_128259, EVT_N2K_128259, this);
+    Bind(EVT_N2K_128259, &tactics_pi::HandleN2K_128259, this);
+
+    // Water depth   PGN 128267
+    NMEA2000Id id_128267(128267);
+    mN2KListener128267 = GetListener(id_128267, EVT_N2K_128267, this);
+    Bind(EVT_N2K_128267, &tactics_pi::HandleN2K_128267, this);
+
+    // Wind   PGN 130306
+    NMEA2000Id id_130306(130306);
+    mN2KListener130306 = GetListener(id_130306, EVT_N2K_130306, this);
+    Bind(EVT_N2K_130306, &tactics_pi::HandleN2K_130306, this);
+
+    // Environment   PGN 130310
+    NMEA2000Id id_130310(130310);
+    mN2KListener130310 = GetListener(id_130310, EVT_N2K_130310, this);
+    Bind(EVT_N2K_130310, &tactics_pi::HandleN2K_130310, this);
+
     //we process data 1/s ...
     m_avgWindUpdTimer.Connect(wxEVT_TIMER, wxTimerEventHandler(tactics_pi::OnAvgWindUpdTimer), NULL, this);
     m_avgWindUpdTimer.Start(1000, wxTIMER_CONTINUOUS);
@@ -672,6 +720,18 @@ void tactics_pi::OnAvgWindUpdTimer(wxTimerEvent & event)
 }
 bool tactics_pi::DeInit(void)
 {
+    Unbind(EVT_N2K_127250, &tactics_pi::HandleN2K_127250, this);
+    Unbind(EVT_N2K_127257, &tactics_pi::HandleN2K_127257, this);
+    Unbind(EVT_N2K_128259, &tactics_pi::HandleN2K_128259, this);
+    Unbind(EVT_N2K_128267, &tactics_pi::HandleN2K_128267, this);
+    Unbind(EVT_N2K_130306, &tactics_pi::HandleN2K_130306, this);
+    Unbind(EVT_N2K_130310, &tactics_pi::HandleN2K_130310, this);
+    mN2KListener127250.reset();
+    mN2KListener127257.reset();
+    mN2KListener128259.reset();
+    mN2KListener128267.reset();
+    mN2KListener130306.reset();
+    mN2KListener130310.reset();
     SaveConfig();
     if (IsRunning()) { // Timer started?
         Stop(); // Stop timer
@@ -769,6 +829,21 @@ void tactics_pi::Notify()
     if (mAWS_Watchdog <= 0) {
       SendSentenceToAllInstruments(OCPN_DBP_STC_AWS, NAN, _T(""));
     }
+
+    // Without NMEA 2000 data, give the value back to NMEA 0183
+    if (--mN2KHDMWatchdog <= 0 && mPriHeadingM == 0) mPriHeadingM = 99;
+    if (mN2KHDMWatchdog <= 0 && mPriHeadingT == 5) mPriHeadingT = 99;
+    if (--mN2KHDTWatchdog <= 0 && mPriHeadingT == 0) mPriHeadingT = 99;
+    if (--mN2KHeelWatchdog <= 0 && mPriHeel == 0) mPriHeel = 99;
+    if (--mN2KSTWWatchdog <= 0 && mPriSTW == 0) mPriSTW = 99;
+    if (--mN2KDepthWatchdog <= 0 && mPriDepth == 0) mPriDepth = 99;
+    if (--mN2KAWAWatchdog <= 0 && mPriAWA == 0) mPriAWA = 99;
+    if (--mN2KTWAWatchdog <= 0 && mPriTWA == 0) mPriTWA = 99;
+    if (--mN2KTWDWatchdog <= 0 && mPriTWD == 0) mPriTWD = 99;
+    if (--mN2KWTPWatchdog <= 0 && mPriWTP == 0) mPriWTP = 99;
+    if (--mN2KATMPWatchdog <= 0 && mPriATMP == 0) mPriATMP = 99;
+    if (--mN2KMDAWatchdog <= 0 && mPriMDA == 0) mPriMDA = 99;
+    mN2KTWAWaterWatchdog--; // checked in HandleN2K_130306
 
     ExportPerformanceData();
 
@@ -2450,8 +2525,9 @@ void tactics_pi::SetNMEASentence(wxString &sentence)
                 double   m_NMEA0183.Mta.Temperature;
                 wxString m_NMEA0183.Mta.UnitOfMeasurement;
                 */
-                SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_NMEA0183.Mta.Temperature,
-                    m_NMEA0183.Mta.UnitOfMeasurement);
+                if (mPriATMP >= 1)
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_NMEA0183.Mta.Temperature,
+                        m_NMEA0183.Mta.UnitOfMeasurement);
             }
         }
         else if (m_NMEA0183.LastSentenceIDReceived == _T("MDA")) {  //Barometric pressure
@@ -2465,7 +2541,7 @@ void tactics_pi::SetNMEASentence(wxString &sentence)
 
                 */
 
-                if (m_NMEA0183.Mda.Pressure > .8 && m_NMEA0183.Mda.Pressure < 1.1) {
+                if (mPriMDA >= 1 && m_NMEA0183.Mda.Pressure > .8 && m_NMEA0183.Mda.Pressure < 1.1) {
                     SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_NMEA0183.Mda.Pressure * 1000,
                         _T("hPa")); //Convert to hpa befor sending to instruments.
                 }
@@ -2479,8 +2555,9 @@ void tactics_pi::SetNMEASentence(wxString &sentence)
                 double   m_NMEA0183.Mtw.Temperature;
                 wxString m_NMEA0183.Mtw.UnitOfMeasurement;
                 */
-                SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Mtw.Temperature,
-                    m_NMEA0183.Mtw.UnitOfMeasurement);
+                if (mPriWTP >= 1)
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Mtw.Temperature,
+                        m_NMEA0183.Mtw.UnitOfMeasurement);
             }
 
         }
@@ -2503,12 +2580,12 @@ void tactics_pi::SetNMEASentence(wxString &sentence)
             if (m_NMEA0183.Parse()) {
                 // Option for True vs Magnetic
                 wxString windunit;
-                if (m_NMEA0183.Mwd.WindAngleTrue < 999.) { //if WindAngleTrue is available, use it ...
+                if (mPriTWD >= 1 && m_NMEA0183.Mwd.WindAngleTrue < 999.) { //if WindAngleTrue is available, use it ...
                     SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_NMEA0183.Mwd.WindAngleTrue,
                         _T("\u00B0T"));
                     mTWD_Watchdog = gps_watchdog_timeout_ticks;
                 }
-                else if (m_NMEA0183.Mwd.WindAngleMagnetic < 999.) { //otherwise try WindAngleMagnetic ...
+                else if (mPriTWD >= 1 && m_NMEA0183.Mwd.WindAngleMagnetic < 999.) { //otherwise try WindAngleMagnetic ...
                     SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_NMEA0183.Mwd.WindAngleMagnetic,
                         _T("\u00B0M"));
                     mTWD_Watchdog = gps_watchdog_timeout_ticks;
@@ -2539,7 +2616,7 @@ void tactics_pi::SetNMEASentence(wxString &sentence)
                 if (m_bNKE_TrueWindTableBug && m_VWR_AWA < 8 && m_NMEA0183.Mwd.WindSpeedKnots > mTWS*1.7)
                   ;//gotcha
                 //wxLogMessage("MWD-Sentence, MWD-Spd=%f,mTWS=%f,VWR_AWA=%f,NKE_BUG=%d", m_NMEA0183.Mwd.WindSpeedKnots, mTWS, m_VWR_AWA, m_bNKE_TrueWindTableBug);
-                else
+                else if (mPriTWA >= 1)
                   SendSentenceToAllInstruments(OCPN_DBP_STC_TWS, toUsrSpeed_Plugin(m_NMEA0183.Mwd.WindSpeedKnots, g_iDashWindSpeedUnit),
                     getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
                 mTWS_Watchdog = gps_watchdog_timeout_ticks;
@@ -2759,7 +2836,7 @@ void tactics_pi::SetNMEASentence(wxString &sentence)
                     SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, m_NMEA0183.Vhw.DegreesMagnetic,
                         _T("\u00B0M"));
                 }
-                if (m_NMEA0183.Vhw.Knots < 999.) {
+                if (mPriSTW >= 1 && m_NMEA0183.Vhw.Knots < 999.) {
                     SendSentenceToAllInstruments(OCPN_DBP_STC_STW, toUsrSpeed_Plugin(m_NMEA0183.Vhw.Knots, g_iDashSpeedUnit),
                         getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
                 }
@@ -2876,12 +2953,12 @@ void tactics_pi::SetNMEASentence(wxString &sentence)
                     xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
                     // NKE style of XDR Airtemp
                     //if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("AirTemp")){
-                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C")) {
+                    if (mPriATMP >= 1 && m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C")) {
                         SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, xdrdata, m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
                     } //Nasa style air temp
                     // NKE style of XDR Barometer
                     //if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("Barometer")) {
-                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("P")) {
+                    if (mPriMDA >= 1 && m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("P")) {
 
                         //double data;
                         if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == _T("B"))
@@ -2895,7 +2972,7 @@ void tactics_pi::SetNMEASentence(wxString &sentence)
                         SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData, m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
                     }*/
                     // NKE style of XDR Pitch (=Bow up/down)
-                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
+                    if (mPriHeel >= 1 && m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
                       if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH")
                         || m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PITCH")) {
                         if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0){
@@ -2926,7 +3003,7 @@ void tactics_pi::SetNMEASentence(wxString &sentence)
                         SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
                       }
                     } //Nasa style water temp
-                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
+                    if (mPriWTP >= 1 && m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
                         SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData, m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
                     }
                 }
@@ -3016,6 +3093,302 @@ void tactics_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
     mSatsInView = pfix.nSats;
     //    SendSentenceToAllInstruments( OCPN_DBP_STC_SAT, mSatsInView, _T("") );
 
+}
+
+// Heading   PGN 127250
+void tactics_pi::HandleN2K_127250(ObservedEvt &ev)
+{
+    NMEA2000Id id_127250(127250);
+    std::vector<uint8_t> v = GetN2000Payload(id_127250, ev);
+
+    // Get a unique ID to prioritize source(s)
+    unsigned char source_id = v.at(7);
+    char ss[4];
+    sprintf(ss, "%d", source_id);
+    std::string ident = std::string(ss);
+    std::string source = GetN2000Source(id_127250, ev);
+    source += ":" + ident;
+
+    unsigned char SID;
+    double Heading, Deviation, Variation;
+    tN2kHeadingReference ref;
+
+    if (ParseN2kPGN127250(v, SID, Heading, Deviation, Variation, ref)) {
+        if (N2kIsNA(Heading)) return;
+        double heading = Heading * 180. / M_PI;
+        if (ref == N2khr_magnetic) {
+            if (mPriHeadingM != 0)
+                mN2KHDMSource = source;
+            if (source != mN2KHDMSource) return;
+            mPriHeadingM = 0;
+            mN2KHDMWatchdog = gps_watchdog_timeout_ticks;
+            mHdm = heading;
+            SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm, _T("\u00B0M"));
+            mHDx_Watchdog = gps_watchdog_timeout_ticks;
+
+            // Like HDG and HDM: without a true heading, use magnetic + variation
+            if (!wxIsNaN(mVar) && mPriHeadingT >= 5) {
+                mPriHeadingT = 5;
+                double hdt = mHdm + mVar;
+                if (hdt < 0)
+                    hdt += 360;
+                else if (hdt >= 360.0)
+                    hdt -= 360;
+                SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, hdt, _T("\u00B0T"));
+                mHDT_Watchdog = gps_watchdog_timeout_ticks;
+            }
+        }
+        else if (ref == N2khr_true) {
+            if (mPriHeadingT != 0)
+                mN2KHDTSource = source;
+            if (source != mN2KHDTSource) return;
+            mPriHeadingT = 0;
+            mN2KHDTWatchdog = gps_watchdog_timeout_ticks;
+            SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, _T("\u00B0T"));
+            mHDT_Watchdog = gps_watchdog_timeout_ticks;
+        }
+    }
+}
+
+// Attitude   PGN 127257
+void tactics_pi::HandleN2K_127257(ObservedEvt &ev)
+{
+    NMEA2000Id id_127257(127257);
+    std::vector<uint8_t> v = GetN2000Payload(id_127257, ev);
+
+    // Get a unique ID to prioritize source(s)
+    unsigned char source_id = v.at(7);
+    char ss[4];
+    sprintf(ss, "%d", source_id);
+    std::string ident = std::string(ss);
+    std::string source = GetN2000Source(id_127257, ev);
+    source += ":" + ident;
+
+    unsigned char SID;
+    double Yaw, Pitch, Roll;
+
+    if (ParseN2kPGN127257(v, SID, Yaw, Pitch, Roll)) {
+        if (N2kIsNA(Roll)) return;
+        // Take a new source only when no NMEA 2000 source is in use
+        if (mPriHeel != 0)
+            mN2KHeelSource = source;
+        if (source != mN2KHeelSource) return;
+        mPriHeel = 0;
+        mN2KHeelWatchdog = gps_watchdog_timeout_ticks;
+
+        if (!N2kIsNA(Pitch)) {
+            double pitch = Pitch * 180. / M_PI;
+            wxString unit = _T("\u00B0");
+            if (pitch > 0)
+                unit = _("\u00B0 Bow up");
+            else if (pitch < 0) {
+                unit = _("\u00B0 Bow down");
+                pitch *= -1;
+            }
+            SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, pitch, unit);
+        }
+        double heel = Roll * 180. / M_PI;
+        wxString unit = _T("\u00B0");
+        if (heel > 0)
+            unit = _T("\u00B0r");
+        else if (heel < 0)
+            unit = _T("\u00B0l");
+        SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, heel, unit);
+    }
+}
+
+// Speed through water   PGN 128259
+void tactics_pi::HandleN2K_128259(ObservedEvt &ev)
+{
+    NMEA2000Id id_128259(128259);
+    std::vector<uint8_t> v = GetN2000Payload(id_128259, ev);
+
+    // Get a unique ID to prioritize source(s)
+    unsigned char source_id = v.at(7);
+    char ss[4];
+    sprintf(ss, "%d", source_id);
+    std::string ident = std::string(ss);
+    std::string source = GetN2000Source(id_128259, ev);
+    source += ":" + ident;
+
+    unsigned char SID;
+    double WaterReferenced, GroundReferenced;
+    tN2kSpeedWaterReferenceType SWRT;
+
+    if (ParseN2kPGN128259(v, SID, WaterReferenced, GroundReferenced, SWRT)) {
+        if (N2kIsNA(WaterReferenced)) return;
+        if (mPriSTW != 0)
+            mN2KSTWSource = source;
+        if (source != mN2KSTWSource) return;
+        mPriSTW = 0;
+        mN2KSTWWatchdog = gps_watchdog_timeout_ticks;
+        SendSentenceToAllInstruments(OCPN_DBP_STC_STW, toUsrSpeed_Plugin(MS2KNOTS(WaterReferenced), g_iDashSpeedUnit),
+            getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+    }
+}
+
+// Water depth   PGN 128267
+void tactics_pi::HandleN2K_128267(ObservedEvt &ev)
+{
+    NMEA2000Id id_128267(128267);
+    std::vector<uint8_t> v = GetN2000Payload(id_128267, ev);
+
+    // Get a unique ID to prioritize source(s)
+    unsigned char source_id = v.at(7);
+    char ss[4];
+    sprintf(ss, "%d", source_id);
+    std::string ident = std::string(ss);
+    std::string source = GetN2000Source(id_128267, ev);
+    source += ":" + ident;
+
+    unsigned char SID;
+    double DepthBelowTransducer, Offset, Range;
+
+    if (ParseN2kPGN128267(v, SID, DepthBelowTransducer, Offset, Range)) {
+        if (N2kIsNA(DepthBelowTransducer)) return;
+        if (mPriDepth != 0)
+            mN2KDepthSource = source;
+        if (source != mN2KDepthSource) return;
+        mPriDepth = 0;
+        mN2KDepthWatchdog = gps_watchdog_timeout_ticks;
+        double depth = DepthBelowTransducer;
+        if (!N2kIsNA(Offset)) depth += Offset;
+        SendSentenceToAllInstruments(OCPN_DBP_STC_DPT, toUsrDistance_Plugin(depth / 1852.0, g_iDashDepthUnit), getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
+    }
+}
+
+// Wind   PGN 130306
+void tactics_pi::HandleN2K_130306(ObservedEvt &ev)
+{
+    NMEA2000Id id_130306(130306);
+    std::vector<uint8_t> v = GetN2000Payload(id_130306, ev);
+
+    // Get a unique ID to prioritize source(s)
+    unsigned char source_id = v.at(7);
+    char ss[4];
+    sprintf(ss, "%d", source_id);
+    std::string ident = std::string(ss);
+    std::string source = GetN2000Source(id_130306, ev);
+    source += ":" + ident;
+
+    unsigned char SID;
+    double WindSpeed, WindAngle;
+    tN2kWindReference WindReference;
+
+    if (ParseN2kPGN130306(v, SID, WindSpeed, WindAngle, WindReference)) {
+        if (N2kIsNA(WindSpeed) || N2kIsNA(WindAngle)) return;
+        double angle = WindAngle * 180. / M_PI;
+        double knots = MS2KNOTS(WindSpeed);
+        wxString unit = _T("\u00B0R");
+        switch (WindReference) {
+        case N2kWind_Apparent:
+            if (mPriAWA != 0)
+                mN2KAWASource = source;
+            if (source != mN2KAWASource) return;
+            mPriAWA = 0;
+            mN2KAWAWatchdog = gps_watchdog_timeout_ticks;
+            if (angle > 180.0) {
+                angle = 360.0 - angle;
+                unit = _T("\u00B0L");
+            }
+            SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, angle, unit);
+            SendSentenceToAllInstruments(OCPN_DBP_STC_AWS, toUsrSpeed_Plugin(knots, g_iDashWindSpeedUnit),
+                getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+            mAWS_Watchdog = gps_watchdog_timeout_ticks;
+            break;
+        case N2kWind_True_water:
+        case N2kWind_True_boat:
+            // Like VWT, true wind referenced to water wins
+            if (WindReference == N2kWind_True_boat && mN2KTWAWaterWatchdog > 0) return;
+            if (WindReference == N2kWind_True_water && mN2KTWAWaterWatchdog <= 0)
+                mPriTWA = 99;
+            if (mPriTWA != 0)
+                mN2KTWASource = source;
+            if (source != mN2KTWASource) return;
+            if (WindReference == N2kWind_True_water)
+                mN2KTWAWaterWatchdog = gps_watchdog_timeout_ticks;
+            mPriTWA = 0;
+            mN2KTWAWatchdog = gps_watchdog_timeout_ticks;
+            if (angle > 180.0) {
+                angle = 360.0 - angle;
+                unit = _T("\u00B0L");
+            }
+            SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, angle, unit);
+            SendSentenceToAllInstruments(OCPN_DBP_STC_TWS, toUsrSpeed_Plugin(knots, g_iDashWindSpeedUnit),
+                getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+            mTWS_Watchdog = gps_watchdog_timeout_ticks;
+            break;
+        case N2kWind_True_North:
+        case N2kWind_Magnetic:
+            if (WindReference == N2kWind_Magnetic) {
+                // Instruments expect true wind direction
+                if (wxIsNaN(mVar)) return;
+                angle += mVar;
+                if (angle < 0)
+                    angle += 360;
+                else if (angle >= 360.0)
+                    angle -= 360;
+            }
+            if (mPriTWD != 0)
+                mN2KTWDSource = source;
+            if (source != mN2KTWDSource) return;
+            mPriTWD = 0;
+            mN2KTWDWatchdog = gps_watchdog_timeout_ticks;
+            SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, angle, _T("\u00B0T"));
+            mTWD_Watchdog = gps_watchdog_timeout_ticks;
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+// Environment   PGN 130310
+void tactics_pi::HandleN2K_130310(ObservedEvt &ev)
+{
+    NMEA2000Id id_130310(130310);
+    std::vector<uint8_t> v = GetN2000Payload(id_130310, ev);
+
+    // Get a unique ID to prioritize source(s)
+    unsigned char source_id = v.at(7);
+    char ss[4];
+    sprintf(ss, "%d", source_id);
+    std::string ident = std::string(ss);
+    std::string source = GetN2000Source(id_130310, ev);
+    source += ":" + ident;
+
+    unsigned char SID;
+    double WaterTemperature, OutsideAmbientAirTemperature, AtmosphericPressure;
+
+    if (ParseN2kPGN130310(v, SID, WaterTemperature, OutsideAmbientAirTemperature, AtmosphericPressure)) {
+        if (!N2kIsNA(WaterTemperature)) {
+            if (mPriWTP != 0)
+                mN2KWTPSource = source;
+            if (source == mN2KWTPSource) {
+                mPriWTP = 0;
+                mN2KWTPWatchdog = gps_watchdog_timeout_ticks;
+                SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, KELVIN2C(WaterTemperature), _T("C"));
+            }
+        }
+        if (!N2kIsNA(OutsideAmbientAirTemperature)) {
+            if (mPriATMP != 0)
+                mN2KATMPSource = source;
+            if (source == mN2KATMPSource) {
+                mPriATMP = 0;
+                mN2KATMPWatchdog = gps_watchdog_timeout_ticks;
+                SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, KELVIN2C(OutsideAmbientAirTemperature), _T("C"));
+            }
+        }
+        if (!N2kIsNA(AtmosphericPressure)) {
+            if (mPriMDA != 0)
+                mN2KMDASource = source;
+            if (source == mN2KMDASource) {
+                mPriMDA = 0;
+                mN2KMDAWatchdog = gps_watchdog_timeout_ticks;
+                SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, AtmosphericPressure / 100., _T("hPa"));
+            }
+        }
+    }
 }
 
 void tactics_pi::SetCursorLatLon(double lat, double lon)
