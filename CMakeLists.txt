@@ -248,6 +248,9 @@ if (NOT OCPN_FLATPAK_CONFIG)
   add_subdirectory(opencpn-libs/nmea0183)
   target_link_libraries(${PACKAGE_NAME} ocpn::nmea0183)
 
+  add_subdirectory(opencpn-libs/n2kparser)
+  target_link_libraries(${PACKAGE_NAME} ocpn::N2KParser)
+
 #  Tactics has been converted to use opencpn-libs/nmea0183
 #  This is original Dashboard_Tactics nmea0183 version
 #  Keep this private version around for awhile as it may be useful.
